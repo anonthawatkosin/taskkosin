@@ -10,6 +10,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Task Kosin">
+<script>try{var tk=localStorage.getItem('task-kosin-theme');if(tk==='light'||tk==='dark')document.documentElement.setAttribute('data-theme',tk)}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -184,6 +185,42 @@ input[type="date"].in-f::-webkit-date-and-time-value{text-align:left}
   @keyframes pmIn{from{transform:translateX(36px);opacity:.2}}
   body.leaving{transition:transform .2s ease,opacity .2s ease;transform:translateX(36px);opacity:0}
 }
+/* theme toggle (top-right): sun ⇄ moon */
+.theme-btn{width:42px;height:42px;flex:none;border-radius:14px;border:1px solid var(--line);background:var(--surface);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:grid;place-items:center;position:relative;overflow:hidden;cursor:pointer;padding:0;box-shadow:0 6px 16px -10px rgba(0,0,0,.35);transition:transform .15s}
+.theme-btn:active{transform:scale(.9)}
+.theme-btn svg{position:absolute;width:22px;height:22px;transition:transform .55s cubic-bezier(.3,1.5,.5,1),opacity .35s}
+.tb-sun{color:#F59E0B}.tb-moon{color:#8B9CFF}
+.tb-sun .rays{transform-box:fill-box;transform-origin:center;animation:tbSpin 12s linear infinite}
+.tb-moon .star{animation:tbTwinkle 2.2s ease-in-out infinite}.tb-moon .s2{animation-delay:1.1s}
+@keyframes tbSpin{to{transform:rotate(360deg)}}
+@keyframes tbTwinkle{50%{opacity:.2}}
+.theme-btn[data-mode="light"] .tb-moon{transform:rotate(-120deg) scale(.2) translateY(14px);opacity:0}
+.theme-btn[data-mode="dark"] .tb-sun{transform:rotate(120deg) scale(.2) translateY(14px);opacity:0}
+.theme-btn.pop::after{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(circle,rgba(255,200,80,.55),transparent 70%);animation:tbPop .5s ease-out forwards}
+.theme-btn[data-mode="dark"].pop::after{background:radial-gradient(circle,rgba(139,156,255,.55),transparent 70%)}
+@keyframes tbPop{from{transform:scale(.2);opacity:1}to{transform:scale(1.6);opacity:0}}
+html.theme-anim,html.theme-anim body,html.theme-anim .glass,html.theme-anim .card{transition:background-color .45s ease,color .45s ease,border-color .45s ease!important}
+@media (prefers-reduced-motion:reduce){.theme-btn svg,.tb-sun .rays,.tb-moon .star{animation:none!important;transition:none!important}}
+/* day/night switch: sun knob over a blue sky ⇄ moon knob over a starry night */
+.theme-btn.tsw{width:68px;height:34px;border-radius:99px;border:0;padding:0;display:block;background:linear-gradient(180deg,#4FA8EE,#9AD3FF);box-shadow:inset 0 2px 6px rgba(0,0,0,.25),0 4px 12px -6px rgba(0,0,0,.45);backdrop-filter:none;-webkit-backdrop-filter:none;transition:background .5s,transform .15s}
+.theme-btn.tsw[data-mode="dark"]{background:linear-gradient(180deg,#0B1530,#27346A)}
+.tsw-knob{position:absolute;top:3px;left:3px;width:28px;height:28px;border-radius:50%;z-index:2;background:radial-gradient(circle at 35% 35%,#FFE680,#F5B300);box-shadow:0 0 0 4px rgba(255,226,122,.28),0 0 16px 4px rgba(255,196,50,.55);transition:transform .6s cubic-bezier(.5,1.6,.4,1),background .5s,box-shadow .5s}
+.tsw[data-mode="dark"] .tsw-knob{transform:translateX(34px) rotate(200deg);background:radial-gradient(circle at 35% 35%,#F4F6FC,#BFC6D8);box-shadow:0 0 0 4px rgba(255,255,255,.07),0 0 14px 3px rgba(190,205,255,.35)}
+.tsw-knob i{position:absolute;border-radius:50%;background:#A3AAC0;opacity:0;transition:opacity .35s .2s}
+.tsw-knob .c1{width:7px;height:7px;left:6px;top:7px}.tsw-knob .c2{width:5px;height:5px;left:15px;top:15px}.tsw-knob .c3{width:4px;height:4px;left:16px;top:5px}
+.tsw[data-mode="dark"] .tsw-knob i{opacity:1}
+.tsw-clouds{position:absolute;inset:0;transition:transform .5s,opacity .4s}
+.tsw-clouds i{position:absolute;background:#fff;border-radius:99px;animation:tswCloud 6s ease-in-out infinite}
+.tsw-clouds i:nth-child(1){width:22px;height:9px;right:6px;bottom:6px}
+.tsw-clouds i:nth-child(2){width:14px;height:12px;right:14px;bottom:8px;animation-delay:.4s}
+.tsw-clouds i:nth-child(3){width:16px;height:7px;right:28px;bottom:4px;opacity:.85;animation-delay:.8s}
+@keyframes tswCloud{50%{transform:translateX(-3px)}}
+.tsw[data-mode="dark"] .tsw-clouds{transform:translateY(20px);opacity:0}
+.tsw-stars{position:absolute;inset:0;opacity:0;transform:translateY(-12px);transition:transform .5s,opacity .4s}
+.tsw-stars i{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;animation:tbTwinkle 1.8s ease-in-out infinite}
+.tsw-stars i:nth-child(1){left:9px;top:8px}.tsw-stars i:nth-child(2){left:18px;top:19px;width:2px;height:2px;animation-delay:.5s}.tsw-stars i:nth-child(3){left:27px;top:9px;animation-delay:1s}.tsw-stars i:nth-child(4){left:12px;top:24px;width:2px;height:2px;animation-delay:1.3s}.tsw-stars i:nth-child(5){left:31px;top:22px;width:2px;height:2px;animation-delay:.2s}
+.tsw[data-mode="dark"] .tsw-stars{opacity:1;transform:none}
+.tsw.pop::after{border-radius:99px}
 pre.csv{white-space:pre;overflow:auto;background:var(--field);padding:10px;border-radius:8px;font-size:.78rem;max-height:40vh}
 @media (prefers-reduced-motion:no-preference){.sheet{animation:up .18s ease-out}@keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}}
 </style>
@@ -200,6 +237,7 @@ pre.csv{white-space:pre;overflow:auto;background:var(--field);padding:10px;borde
       <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
         <button class="iconbtn" id="importBtn" type="button">นำเข้า CSV</button>
         <button class="iconbtn" id="exportBtn" type="button">ส่งออก CSV</button>
+        <button class="theme-btn tsw" type="button" role="switch" aria-label="ธีมมืด" title="สลับธีมสว่าง/มืด"><span class="tsw-clouds"><i></i><i></i><i></i></span><span class="tsw-stars"><i></i><i></i><i></i><i></i><i></i></span><span class="tsw-knob"><i class="c1"></i><i class="c2"></i><i class="c3"></i></span></button>
       </div>
     </div>
     <div class="summary" id="summary"></div>
@@ -682,6 +720,24 @@ document.addEventListener("input",e=>{if(e.target.id==="search"){state.q=e.targe
 document.getElementById("addBtn").onclick=()=>openForm(null);
 document.getElementById("exportBtn").onclick=doExport;
 document.getElementById("importBtn").onclick=openImport;
+
+/* ---- light / dark theme toggle (remembered on this device, shared with the PM page) ---- */
+(function themeToggle(){
+  const KEY='task-kosin-theme', root=document.documentElement, mq=matchMedia('(prefers-color-scheme: dark)');
+  const current=()=>root.getAttribute('data-theme')||(mq.matches?'dark':'light');
+  const paint=()=>{const m=current();document.querySelectorAll('.theme-btn').forEach(b=>{b.dataset.mode=m;b.setAttribute(b.classList.contains('tsw')?'aria-checked':'aria-pressed',m==='dark')});
+    const tc=document.querySelector('meta[name="theme-color"]');if(tc)tc.setAttribute('content',m==='dark'?'#0F0A0C':'#E0122E');};
+  paint(); mq.addEventListener('change',paint);
+  document.addEventListener('click',e=>{
+    const b=e.target.closest('.theme-btn'); if(!b)return;
+    const next=current()==='dark'?'light':'dark';
+    root.classList.add('theme-anim'); root.setAttribute('data-theme',next);
+    try{localStorage.setItem(KEY,next)}catch(_){}
+    paint(); b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop');
+    dispatchEvent(new Event('themechange'));
+    setTimeout(()=>root.classList.remove('theme-anim'),500);
+  });
+})();
 
 /* ---------- boot ---------- */
 /* back to Task Kosin with a slide-out */
