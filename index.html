@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" sizes="32x32" href="icons/task-kosin-32.png">
-<link rel="apple-touch-icon" href="icons/task-kosin-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="task-kosin-32.png">
+<link rel="apple-touch-icon" href="task-kosin-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -599,7 +599,13 @@ $('#cCancel').addEventListener('click',closeConn);
 $('#scrim').addEventListener('click',closeConn);
 $('#connSheet').addEventListener('submit',async e=>{
   e.preventDefault();
-  const url=$('#cUrl').value.trim(), token=$('#cToken').value.trim(), err=$('#cErr'), btn=$('#cSave');
+  // forgiving paste: pull the /exec link and the 40-character token out of whatever was copied
+  const rawUrl=$('#cUrl').value.trim(), rawTok=$('#cToken').value.trim();
+  const mu=rawUrl.match(/https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec/);
+  const mt=rawTok.match(/[0-9a-f]{40}/i);
+  const url=mu?mu[0]:rawUrl, token=mt?mt[0]:rawTok.replace(/\s+/g,'');
+  $('#cUrl').value=url; $('#cToken').value=token;
+  const err=$('#cErr'), btn=$('#cSave');
   const fail=m=>{err.textContent=m;err.hidden=false;btn.disabled=false;btn.textContent='เชื่อมต่อ'};
   if(!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(url))return fail('ลิงก์ต้องขึ้นต้นด้วย https://script.google.com/macros/s/ และลงท้ายด้วย /exec');
   if(token.length<20)return fail('รหัส API สั้นเกินไป คัดลอกจากบันทึกการดำเนินการของ setup');
