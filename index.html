@@ -172,20 +172,35 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .cnav:active{transform:scale(.88)}
 .cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
 .dows{margin:14px 0 4px;font-size:11.5px;color:var(--muted);text-align:center}
-.dcell{aspect-ratio:1;border:0;background:none;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:14px;font-variant-numeric:tabular-nums;transition:background .25s,color .25s,transform .2s;min-width:0}
+.cal{overflow:hidden}
+#calGrid{touch-action:pan-y;user-select:none;-webkit-user-select:none;will-change:transform}
+.dcell{min-height:78px;border:0;background:none;border-radius:12px;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:3px;padding:5px 3px;font-size:14px;font-variant-numeric:tabular-nums;transition:background .25s,box-shadow .25s,transform .2s;min-width:0;text-align:left;cursor:pointer}
 .dcell:hover{background:var(--glass-strong)}
-.dcell:active{transform:scale(.9)}
-.dcell.out{opacity:.35}
-.dcell.today{color:var(--red);font-weight:700;box-shadow:inset 0 0 0 1.5px var(--red)}
-.dcell.sel{background:linear-gradient(135deg,var(--red),var(--red-2));color:#fff;box-shadow:0 8px 16px -8px var(--red);animation:pop .35s cubic-bezier(.3,1.8,.5,1)}
-.dcell.sel .dots i{background:#fff!important}
-.dots{display:flex;gap:2px;height:5px}
-.dots i{width:5px;height:5px;border-radius:50%}
+.dcell:active{transform:scale(.94)}
+.dcell.out{opacity:.38}
+.dnum{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;align-self:center;font-weight:600;flex:none}
+.dcell.today .dnum{background:var(--red);color:#fff;box-shadow:0 4px 10px -4px var(--red)}
+.dcell.sel{background:var(--red-soft);box-shadow:inset 0 0 0 2px var(--red);animation:pop .35s cubic-bezier(.3,1.8,.5,1)}
+/* task chips inside a day: name + status colour */
+.tchip{--c:var(--muted);display:block;font-size:10.5px;line-height:1.4;padding:1px 4px 1px 5px;border-radius:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;border-left:3px solid var(--c);background:var(--soft);color:var(--fg)}
+.tchip.doing{--c:var(--amber);background:var(--amber-soft);color:var(--amber)}
+.tchip.done{--c:var(--green);background:var(--green-soft);color:var(--green);text-decoration:line-through}
+.tchip.high{--c:var(--red);background:var(--red-soft);color:var(--red)}
+.tmore{font-size:10px;color:var(--muted);text-align:center;font-weight:600;line-height:1.2}
+.swipe-hint{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11.5px;color:var(--muted);margin-top:8px}
+.swipe-hint i{display:inline-block;width:18px;height:3px;border-radius:3px;background:var(--line)}
+@media (max-width:560px){
+  .dcell{min-height:60px;padding:4px 2px;gap:3px}
+  .dnum{width:24px;height:24px;font-size:13px}
+  /* phones: chips become bold colour bars */
+  .tchip{font-size:0;height:6px;padding:0;border:0;border-radius:3px;background:var(--c)!important}
+  .tmore{font-size:9.5px}
+}
 .slide-l{animation:slideL .4s ease both}.slide-r{animation:slideR .4s ease both}
 @keyframes slideL{from{opacity:0;transform:translateX(30px)}}
 @keyframes slideR{from{opacity:0;transform:translateX(-30px)}}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:12px;font-size:12px;color:var(--muted)}
-.legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.legend i{display:inline-block;width:14px;height:7px;border-radius:3px;margin-right:5px;vertical-align:middle}
 .day-head{display:flex;justify-content:space-between;align-items:center;margin:20px 2px 0;gap:10px}
 .day-head h3{font-family:var(--f-display);font-size:17px;margin:0}
 .day-head h3 span{font-family:var(--f-body);font-size:13px;color:var(--muted);font-weight:400}
@@ -363,6 +378,7 @@ img{max-width:100%}
       <div class="cal-grid dows"><span>อา</span><span>จ</span><span>อ</span><span>พ</span><span>พฤ</span><span>ศ</span><span>ส</span></div>
       <div class="cal-grid" id="calGrid"></div>
       <div class="legend"><span><i style="background:var(--muted)"></i>ยังไม่เริ่ม</span><span><i style="background:var(--amber)"></i>กำลังทำ</span><span><i style="background:var(--green)"></i>เสร็จแล้ว</span><span><i style="background:var(--red)"></i>ด่วน</span></div>
+      <div class="swipe-hint"><i></i>ปัดซ้าย–ขวาเพื่อเปลี่ยนเดือน<i></i></div>
     </div>
     <div class="day-head"><h3 id="dayTitle"></h3><button class="addDay" id="addDay">+ เพิ่มงานวันนี้</button></div>
     <div class="list" id="dayList"></div>
@@ -425,7 +441,7 @@ img{max-width:100%}
 <div class="toast" id="toast"><span id="toastMsg"></span><button id="toastUndo" hidden>เลิกทำ</button></div>
 
 <script>
-const DAY=864e5, KEEP=14, KEY='the-task-glass-v2';
+const DAY=864e5, KEEP=14, KEY='task-kosin-local-v1';
 const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const LBL={todo:'ยังไม่เริ่ม',doing:'กำลังทำ',done:'เสร็จแล้ว'};
 const NEXT={todo:'doing',doing:'done',done:'todo'};
@@ -634,7 +650,9 @@ let filter='all', query='', lastPct=0;
 
 /* ---- helpers ---- */
 // Main list: open tasks due within 7 days (or no date) + tasks finished today. Further-ahead work lives in the calendar.
-const todayTasks=()=>{const t0=T0();return tasks.filter(t=>t.status==='done'?sod(t.doneAt)===t0:!(t.due!=null&&t.due>t0+7*DAY))};
+// Main list: open tasks due by the end of this month (or no date / overdue) + tasks finished today.
+const monthEnd=()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth()+1,0).getTime()};
+const todayTasks=()=>{const t0=T0(),me=monthEnd();return tasks.filter(t=>t.status==='done'?sod(t.doneAt)===t0:!(t.due!=null&&t.due>me))};
 const sortOpen=(a,b)=>(b.p==='high')-(a.p==='high')||(a.due??9e15)-(b.due??9e15);
 function dueText(t){
   if(t.status==='done')return `เสร็จ ${hhmm(t.doneAt)} น.`;
@@ -671,14 +689,15 @@ function render(){
   $('#heroTitle').textContent=open?`เหลืออีก ${open} งาน`:'เคลียร์งานครบแล้ว';
   $('#heroStats').innerHTML=(urgent?`<span class="hstat red">${IC.flame}ด่วน ${urgent}</span>`:'')
     +(due?`<span class="hstat red">${IC.bell}ครบ/เลยกำหนด ${due}</span>`:'')
-    +`<span class="hstat">เสร็จ ${c.done} จาก ${total}</span>`;
+    +`<span class="hstat">เสร็จ ${c.done} จาก ${total}</span>`
+    +`<span class="hstat">งานถึง ${fmt(monthEnd()).replace(/^\S+ /,'')}</span>`;
   countUp($('#nAll'),total);countUp($('#nDoing'),c.doing);countUp($('#nTodo'),c.todo);countUp($('#nDone'),c.done);
 
   const q=query.toLowerCase(), order={doing:0,todo:1,done:2};
   const rows=v.filter(t=>(filter==='all'||t.status===filter)&&(!q||t.title.toLowerCase().includes(q)||(t.note||'').toLowerCase().includes(q)))
     .sort((a,b)=>order[a.status]-order[b.status]||(a.status==='done'?b.doneAt-a.doneAt:sortOpen(a,b)));
-  const ahead=tasks.filter(t=>t.status!=='done'&&t.due!=null&&t.due>T0()+7*DAY).length;
-  $('#ahead').innerHTML=ahead?`<button class="ahead glass">${IC.cal}<span>มีงานล่วงหน้าอีก <b>${ahead}</b> งาน · ดูในปฏิทิน</span><span style="margin-left:auto">›</span></button>`:'';
+  const ahead=tasks.filter(t=>t.status!=='done'&&t.due!=null&&t.due>monthEnd()).length;
+  $('#ahead').innerHTML=ahead?`<button class="ahead glass">${IC.cal}<span>งานเดือนถัดไปอีก <b>${ahead}</b> งาน · ดูในปฏิทิน</span><span style="margin-left:auto">›</span></button>`:'';
   $('#list').innerHTML=rows.length?rows.map(cardHTML).join('')
     :`<div class="empty glass">${IC.empty}<b>${q?'ไม่พบงานที่ค้นหา':'ไม่มีงานในหมวดนี้'}</b>กด + ด้านล่างเพื่อเพิ่มงานใหม่</div>`;
   renderHistory(); renderCalendar(); save();
@@ -799,8 +818,9 @@ function renderCalendar(dir){
   for(let i=0;i<42;i++){
     const d=new Date(calY,calM,1-first.getDay()+i), k=d.getTime();
     if(i===35&&d.getMonth()!==calM)break; // drop an all-next-month last row
-    const items=tasks.filter(t=>t.due===k);
-    cells+=`<button class="dcell${d.getMonth()!==calM?' out':''}${k===t0?' today':''}${k===selDay?' sel':''}" data-k="${k}" aria-label="${fmt(k)} ${items.length} งาน"><span>${d.getDate()}</span><span class="dots">${items.slice(0,3).map(t=>`<i style="background:${dotColor(t)}"></i>`).join('')}</span></button>`;
+    const items=tasks.filter(t=>t.due===k).sort((a,b)=>({doing:0,todo:1,done:2}[a.status])-({doing:0,todo:1,done:2}[b.status])||(b.p==='high')-(a.p==='high'));
+    const show=items.slice(0,2), more=items.length-show.length;
+    cells+=`<button class="dcell${d.getMonth()!==calM?' out':''}${k===t0?' today':''}${k===selDay?' sel':''}" data-k="${k}" aria-label="${fmt(k)} ${items.length} งาน"><span class="dnum">${d.getDate()}</span>${show.map(t=>`<span class="tchip ${t.status}${t.p==='high'&&t.status==='todo'?' high':''}">${esc(t.title)}</span>`).join('')}${more>0?`<span class="tmore">+${more}</span>`:''}</button>`;
   }
   const g=$('#calGrid'); g.innerHTML=cells;
   if(dir){g.classList.remove('slide-l','slide-r');void g.offsetWidth;g.classList.add(dir==='prev'?'slide-r':'slide-l')}
@@ -817,8 +837,40 @@ function renderDay(){
 }
 $('#calGrid').addEventListener('click',e=>{const b=e.target.closest('.dcell');if(!b)return;selDay=+b.dataset.k;
   const d=new Date(selDay); if(d.getMonth()!==calM){const dir=d<new Date(calY,calM,1)?'prev':'next';calY=d.getFullYear();calM=d.getMonth();renderCalendar(dir)}else renderCalendar()});
-$('#calPrev').addEventListener('click',()=>{calM--;if(calM<0){calM=11;calY--}renderCalendar('prev')});
-$('#calNext').addEventListener('click',()=>{calM++;if(calM>11){calM=0;calY++}renderCalendar('next')});
+function shiftMonth(dir){calM+=dir==='next'?1:-1;if(calM<0){calM=11;calY--}if(calM>11){calM=0;calY++}renderCalendar(dir)}
+$('#calPrev').addEventListener('click',()=>shiftMonth('prev'));
+$('#calNext').addEventListener('click',()=>shiftMonth('next'));
+/* swipe the month grid left/right (finger, pen, mouse drag, or trackpad) */
+(function calSwipe(){
+  const g=$('#calGrid'); let x0=0,y0=0,dx=0,active=false,axis=null,moved=false;
+  const reset=()=>{g.style.transform='';g.style.opacity=''};
+  g.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;x0=e.clientX;y0=e.clientY;dx=0;active=true;axis=null;moved=false});
+  g.addEventListener('pointermove',e=>{
+    if(!active)return;
+    const mx=e.clientX-x0,my=e.clientY-y0;
+    if(axis===null&&Math.hypot(mx,my)>8){axis=Math.abs(mx)>Math.abs(my)?'x':'y';if(axis==='x'){try{g.setPointerCapture(e.pointerId)}catch(_){}g.style.transition='none'}}
+    if(axis==='x'){dx=mx;moved=true;g.style.transform=`translateX(${dx}px)`;g.style.opacity=String(1-Math.min(.55,Math.abs(dx)/500))}
+  });
+  const end=()=>{
+    if(!active)return; active=false;
+    if(axis!=='x')return;
+    g.style.transition='transform .22s ease, opacity .22s ease';
+    if(Math.abs(dx)>55&&!REDUCED){
+      const dir=dx<0?'next':'prev';
+      g.style.transform=`translateX(${dx<0?-60:60}%)`;g.style.opacity='0';
+      setTimeout(()=>{g.style.transition='none';reset();shiftMonth(dir)},200);
+    }else if(Math.abs(dx)>55){g.style.transition='none';reset();shiftMonth(dx<0?'next':'prev')}
+    else reset();
+    setTimeout(()=>{moved=false},60);
+  };
+  g.addEventListener('pointerup',end); g.addEventListener('pointercancel',end);
+  g.addEventListener('click',e=>{if(moved){e.stopImmediatePropagation();e.preventDefault()}},true);
+  let lock=0;
+  g.addEventListener('wheel',e=>{
+    if(Math.abs(e.deltaX)<=Math.abs(e.deltaY)||Math.abs(e.deltaX)<25)return;
+    e.preventDefault(); if(Date.now()<lock)return; lock=Date.now()+650; shiftMonth(e.deltaX>0?'next':'prev');
+  },{passive:false});
+})();
 $('#calToday').addEventListener('click',()=>{const d=new Date();calY=d.getFullYear();calM=d.getMonth();selDay=T0();renderCalendar('in')});
 $('#addDay').addEventListener('click',()=>openSheet(null,selDay));
 let tt,undoFn=null;
