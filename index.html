@@ -92,6 +92,57 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 @keyframes tw{50%{opacity:.15}}
 .hero-main{display:flex;align-items:center;gap:20px;margin-top:14px;position:relative}
 .ring{width:112px;height:112px;flex:none;position:relative}
+/* tear-off calendar page in the hero */
+.dtile{width:112px;flex:none;border-radius:20px;overflow:hidden;background:var(--surface);box-shadow:0 16px 30px -14px rgba(var(--particle),.55);text-align:center;position:relative;animation:tileIn .8s cubic-bezier(.2,.9,.3,1.25) both;transform-origin:50% 0}
+.dt-top{background:linear-gradient(135deg,var(--red),var(--red-2));color:#fff;font-size:13.5px;font-weight:600;padding:10px 4px 8px;position:relative;letter-spacing:.02em}
+.dt-top::before,.dt-top::after{content:"";position:absolute;top:-3px;width:8px;height:14px;border-radius:4px;background:var(--fg);opacity:.7}
+.dt-top::before{left:24px}.dt-top::after{right:24px}
+.dt-num{font-family:var(--f-display);font-size:52px;font-weight:700;line-height:1;padding:8px 0 2px;color:var(--fg);font-variant-numeric:tabular-nums}
+.dt-wd{font-size:11.5px;color:var(--muted);padding:0 4px 11px}
+@keyframes tileIn{from{transform:perspective(500px) rotateX(-75deg);opacity:0}}
+.date #today{display:none}
+/* today / this month sections */
+.sec-h{display:flex;align-items:center;gap:8px;margin:18px 4px 2px;font-family:var(--f-display);font-size:20px;font-weight:700}
+.sec-h:first-child{margin-top:4px}
+.sec-h .n{font-family:var(--f-body);font-size:12px;font-weight:600;background:var(--red);color:#fff;border-radius:99px;padding:1px 9px}
+.sec-h.month .n{background:var(--fg);color:var(--bg)}
+.sec-h .sub{margin-left:auto;font-family:var(--f-body);font-size:12.5px;font-weight:500;color:var(--muted)}
+.day-sub{display:flex;align-items:baseline;gap:6px;font-size:13px;font-weight:600;margin:8px 6px 0;color:var(--fg)}
+.day-sub span{font-weight:400;color:var(--muted);font-size:12px}
+.day-sub.late{color:var(--red)}
+.field select{width:100%;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:11px 36px 11px 13px;outline:none;-webkit-appearance:none;appearance:none;font:inherit;color:var(--fg);background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+.field select:focus{border-color:var(--red)}
+/* hospital chip on cards + hospital filter row */
+.hchip{display:inline-flex;align-items:center;gap:4px;color:var(--teal);font-weight:600}
+.hchip svg{width:12px;height:12px}
+.hfilter{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px 2px 4px;margin:8px 0 2px}
+.hfilter::-webkit-scrollbar{display:none}
+.hfilter button{flex:none;border:1px solid var(--glass-line);background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:99px;padding:6px 12px;font-size:12.5px;display:inline-flex;align-items:center;gap:6px;color:var(--fg);transition:all .25s}
+.hfilter button b{font-weight:600;color:var(--muted);font-size:11.5px}
+.hfilter button.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.hfilter button.on b{color:rgba(255,255,255,.8)}
+.hfilter svg{width:13px;height:13px}
+/* swipe a card: right = done, left = in progress */
+.swipe{position:relative;border-radius:20px}
+.sw-bg{position:absolute;inset:0;border-radius:20px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-weight:700;font-size:14px;color:#fff;opacity:0;transition:opacity .15s}
+.sw-bg span{display:flex;align-items:center;gap:6px;transition:transform .2s cubic-bezier(.3,1.6,.5,1)}
+.sw-bg svg{width:18px;height:18px}
+.swipe.r .sw-bg{opacity:1;background:var(--green)}
+.swipe.l .sw-bg{opacity:1;background:var(--amber)}
+.swipe.r.back .sw-bg{background:var(--muted)}
+.swipe.l.back .sw-bg{background:var(--muted)}
+.swipe.r .sw-l,.swipe.l .sw-r{visibility:hidden}
+.swipe.armed .sw-bg span{transform:scale(1.18)}
+.swipe.r .card,.swipe.l .card{background:var(--surface)}
+.swipe .card{touch-action:pan-y}
+/* while dragging: no live blur and no running icon animations, so the card follows the finger smoothly */
+.swipe.dragging .card{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;will-change:transform;box-shadow:0 10px 24px -12px rgba(0,0,0,.35)}
+.swipe.dragging .card *,.swipe.dragging .card::before,.swipe.dragging .card::after{animation-play-state:paused!important}
+.tip{display:flex;align-items:center;gap:10px;border-radius:16px;padding:10px 14px;font-size:13px;color:var(--muted)}
+.tip b{color:var(--fg);font-weight:600}
+.tip i{display:inline-block;width:10px;height:10px;border-radius:3px;vertical-align:-1px}
+.tip button{margin-left:auto;border:0;background:none;color:var(--muted);font-size:18px;line-height:1}
+.today-empty{border-radius:18px;padding:16px;text-align:center;color:var(--muted);font-size:13.5px}
 .ring svg{transform:rotate(-90deg);overflow:visible}
 .ring .trk{stroke:var(--red-soft)}
 .ring .val{stroke:url(#grad);stroke-linecap:round;transition:stroke-dashoffset 1.2s cubic-bezier(.2,.8,.2,1);filter:drop-shadow(0 0 6px rgba(var(--particle),.55))}
@@ -376,13 +427,10 @@ img{max-width:100%}
     <div class="hero glass">
       <div class="greet"><span id="sky"></span><span id="greetTxt"></span></div>
       <div class="hero-main">
-        <div class="ring">
-          <svg width="112" height="112" viewBox="0 0 112 112">
-            <circle class="trk" cx="56" cy="56" r="46" fill="none" stroke-width="11"/>
-            <circle class="val" id="ringVal" cx="56" cy="56" r="46" fill="none" stroke-width="11" stroke-dasharray="289" stroke-dashoffset="289"/>
-            <g class="orbit"><circle cx="56" cy="2" r="3" fill="var(--red-2)"/></g>
-          </svg>
-          <div class="lbl"><div><b id="pct">0%</b><small>เสร็จแล้ว</small></div></div>
+        <div class="dtile" aria-label="วันนี้">
+          <div class="dt-top" id="dtMon"></div>
+          <div class="dt-num" id="dtDay"></div>
+          <div class="dt-wd" id="dtWd"></div>
         </div>
         <div><h1 id="heroTitle"></h1><div class="hero-stats" id="heroStats"></div></div>
       </div>
@@ -397,6 +445,7 @@ img{max-width:100%}
     </div>
 
     <label class="search"><input id="q" type="search" placeholder="ค้นหางาน…" aria-label="ค้นหางาน"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></svg></label>
+    <div class="hfilter" id="hfilter" aria-label="กรองตามโรงพยาบาล"></div>
 
     <div id="ahead"></div>
     <div class="list" id="list"></div>
@@ -455,6 +504,7 @@ img{max-width:100%}
     <div class="field"><label for="fDue">กำหนดส่ง</label><input id="fDue" type="date"></div>
     <div class="field"><label>ความสำคัญ</label><div class="choice c2" id="fPri"><button type="button" data-v="normal">ปกติ</button><button type="button" data-v="high">ด่วน</button></div></div>
   </div>
+  <div class="field"><label for="fHosp">โรงพยาบาล</label><select id="fHosp"></select></div>
   <div class="field"><label for="fNote">โน้ต (ไม่บังคับ)</label><textarea id="fNote" placeholder="รายละเอียด, สถานที่, ผู้ติดต่อ…"></textarea></div>
   <div class="actions">
     <button type="button" class="btn danger" id="fDel" hidden>ลบ</button>
@@ -478,7 +528,7 @@ img{max-width:100%}
 <div class="toast" id="toast"><span id="toastMsg"></span><button id="toastUndo" hidden>เลิกทำ</button></div>
 
 <script>
-const DAY=864e5, KEEP=14, KEY='task-kosin-local-v1';
+const DAY=864e5, KEEP=14, KEY='task-kosin-local-v2';
 const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const LBL={todo:'ยังไม่เริ่ม',doing:'กำลังทำ',done:'เสร็จแล้ว'};
 const NEXT={todo:'doing',doing:'done',done:'todo'};
@@ -512,13 +562,13 @@ function sample(){
   const t=(title,status,p,due,ago,h,note='')=>({id:id++,title,status,p,note,due:due==null?null:sod(n+due*DAY),
     doneAt:ago==null?null:sod(n-ago*DAY)+(h||15)*36e5+((id*13)%60)*6e4});
   return [
-    t('PM เครื่อง Light Source ห้องผ่าตัด รพ. 3','doing','high',1,null,0,'นัดหัวหน้าห้อง OR ไว้ 9 โมง'),
+    t('PM เครื่อง Light Source ห้องผ่าตัด','doing','high',1,null,0,'นัดหัวหน้าห้อง OR ไว้ 9 โมง'),
     t('อัปเดตตาราง PM ใน Google Sheet','doing','normal',2),
     t('ส่งใบรับซ่อม Endoscope ให้ลูกค้าเซ็น','todo','high',0),
     t('ขอใบเสนอราคาอะไหล่กล้อง','todo','normal',-1),
     t('ทดสอบ IEC 62353 ชุด Camera Control Unit','todo','normal',3),
     t('เตรียมสาย HDMI + Switcher สำหรับ Live Surgery','todo','normal',5),
-    t('PM ประจำปี กล้อง Endoscope รพ. 1','todo','normal',9),
+    t('PM ประจำปี กล้อง Endoscope','todo','normal',9),
     t('งาน Live Surgery สัมมนาแพทย์','todo','high',12,null,0,'ติดตั้งชุด AV ก่อนวันงาน 1 วัน'),
     t('ส่งเครื่องคืนลูกค้าหลังซ่อม','todo','normal',16),
     t('Training ผลิตภัณฑ์ใหม่ให้ทีม','todo','normal',20),
@@ -533,7 +583,7 @@ function sample(){
     t('Calibrate Monitor 4K ห้อง OR 1','done','normal',null,8,14),
     t('ตรวจรับเครื่องใหม่จากคลัง','done','normal',null,11,9),
     t('ประชุมทีม Service ประจำเดือน','done','normal',null,13,10),
-  ];
+  ].map(x=>Object.assign(x,{hosp:({'PM เครื่อง Light Source ห้องผ่าตัด':'รพ.สรรพสิทธิประสงค์','ส่งใบรับซ่อม Endoscope ให้ลูกค้าเซ็น':'รพ.อำนาจเจริญ','ทดสอบ IEC 62353 ชุด Camera Control Unit':'รพ.วารินชำราบ','เตรียมสาย HDMI + Switcher สำหรับ Live Surgery':'รพ.มะเร็งอุบลราชธานี','PM ประจำปี กล้อง Endoscope':'รพ.มุกดาหาร','งาน Live Surgery สัมมนาแพทย์':'รพ.มะเร็งอุบลราชธานี','ส่งเครื่องคืนลูกค้าหลังซ่อม':'รพ.พริ้นซ์ อุบลราชธานี','ติดตั้ง Insufflator ห้อง OR 2':'รพ.สมเด็จยุพราชเดชอุดม','Leak Test กล้อง Gastroscope':'รพ.อุบลรักษ์ ธนบุรี'})[x.title]||''}));
 }
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 /* ================= BACKEND: Google Sheet via Apps Script =================
@@ -557,8 +607,8 @@ const SYNC_TXT={ok:'บันทึกลงชีตแล้ว',saving:'ก�
 function setSync(s){const el=$('#sync');el.dataset.s=s;el.querySelector('b').textContent=SYNC_TXT[s]}
 const gas=(fn,arg)=>fn==='apiList'?api('list'):fn==='apiSave'?api('save',{task:arg}):fn==='apiDelete'?api('delete',{id:arg}):api('testLine');
 // Wire format — key order must match rowToTask_ in Code.gs
-const toWire=t=>({id:String(t.id),title:t.title,status:t.status,p:t.p,note:t.note||'',due:t.due!=null?toISO(t.due):'',doneAt:t.status==='done'?(t.doneAt||null):null,createdAt:t.createdAt||null});
-const fromWire=w=>({id:String(w.id),title:w.title,status:w.status,p:w.p,note:w.note||'',due:w.due?sod(new Date(w.due+'T00:00')):null,doneAt:w.doneAt||null,createdAt:w.createdAt||null});
+const toWire=t=>({id:String(t.id),title:t.title,status:t.status,p:t.p,note:t.note||'',due:t.due!=null?toISO(t.due):'',doneAt:t.status==='done'?(t.doneAt||null):null,createdAt:t.createdAt||null,hosp:t.hosp||''});
+const fromWire=w=>({id:String(w.id),title:w.title,status:w.status,p:w.p,note:w.note||'',due:w.due?sod(new Date(w.due+'T00:00')):null,doneAt:w.doneAt||null,createdAt:w.createdAt||null,hosp:w.hosp||''});
 
 // Diff current tasks against what the sheet last returned; write only real changes.
 function save(){
@@ -582,6 +632,7 @@ function enqueue(id,fn){
 const ser=a=>JSON.stringify(a.map(toWire).sort((x,y)=>x.id.localeCompare(y.id)));
 function applyServer(r,fromCache){
   serverInfo=r;
+  if(Array.isArray(r.hospitals))setHospitals(r.hospitals);
   if(!fromCache)store.set(CACHE_KEY,JSON.stringify(r));
   const docs=(r.tasks||[]).map(fromWire);
   lastSaved=new Map(docs.map(t=>[String(t.id),JSON.stringify(toWire(t))]));
@@ -706,10 +757,11 @@ function dueText(t){
 IC.cal='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 3v3M17 3v3"/><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17"/></svg>';
 const segHTML=t=>`<div class="seg" data-s="${t.status}" role="group" aria-label="สถานะงาน"><span class="knob"></span>${['todo','doing','done'].map(s=>`<button data-act="set" data-to="${s}" class="${t.status===s?'on':''}" aria-pressed="${t.status===s}">${LBL[s]}</button>`).join('')}</div>`;
 function cardHTML(t,i){
-  const m=[t.p==='high'&&t.status!=='done'?'<span class="urgent">ด่วน</span>':'',dueText(t),t.note?'มีโน้ต':''].filter(Boolean).join('<span>·</span>');
-  return `<div class="card glass ${t.p==='high'&&t.status!=='done'?'hi':''}" data-id="${t.id}" data-s="${t.status}" style="animation-delay:${(i||0)*45}ms">
+  const m=[t.hosp?`<span class="hchip">${IC.hosp}${esc(shortHosp(t.hosp))}</span>`:'',t.p==='high'&&t.status!=='done'?'<span class="urgent">ด่วน</span>':'',dueText(t),t.note?'มีโน้ต':''].filter(Boolean).join('<span>·</span>');
+  const rTo=t.status!=='done'?'done':'todo', lTo=t.status==='doing'?'todo':'doing';
+  return `<div class="swipe" data-sid="${t.id}" data-r="${rTo}" data-l="${lTo}"><div class="sw-bg" aria-hidden="true"><span class="sw-r">${rTo==='done'?IC.done+'เสร็จแล้ว':'↩ ยังไม่เริ่ม'}</span><span class="sw-l">${lTo==='doing'?'กำลังทำ ▶':'ยังไม่เริ่ม ↩'}</span></div><div class="card glass ${t.p==='high'&&t.status!=='done'?'hi':''}" data-id="${t.id}" data-s="${t.status}" style="animation-delay:${(i||0)*45}ms">
     <span class="ico">${IC[t.status]}</span>
-    <div class="info"><button class="body" data-act="edit"><span class="ttl">${esc(t.title)}</span>${m?`<span class="meta">${m}</span>`:''}</button>${segHTML(t)}</div></div>`;
+    <div class="info"><button class="body" data-act="edit"><span class="ttl">${esc(t.title)}</span>${m?`<span class="meta">${m}</span>`:''}</button>${segHTML(t)}</div></div></div>`;
 }
 
 function countUp(el,to,suffix=''){
@@ -725,24 +777,60 @@ function render(){
   const total=v.length, pct=total?Math.round(c.done/total*100):0, open=c.todo+c.doing;
   const urgent=v.filter(t=>t.p==='high'&&t.status!=='done').length;
   const due=v.filter(t=>t.status!=='done'&&t.due!=null&&t.due<=T0()).length;
-  countUp($('#pct'),pct,'%');
-  requestAnimationFrame(()=>requestAnimationFrame(()=>$('#ringVal').style.strokeDashoffset=289*(1-pct/100)));
-  $('#heroTitle').textContent=open?`เหลืออีก ${open} งาน`:'เคลียร์งานครบแล้ว';
-  $('#heroStats').innerHTML=(urgent?`<span class="hstat red">${IC.flame}ด่วน ${urgent}</span>`:'')
-    +(due?`<span class="hstat red">${IC.bell}ครบ/เลยกำหนด ${due}</span>`:'')
-    +`<span class="hstat">เสร็จ ${c.done} จาก ${total}</span>`
-    +pmHeroChip()
-    +`<span class="hstat">งานถึง ${fmt(monthEnd()).replace(/^\S+ /,'')}</span>`;
+  const t0=T0(), isTodayTask=t=>t.status!=='todo'||(t.due!=null&&t.due<=t0);
+  const todayOpen=v.filter(t=>t.status!=='done'&&isTodayTask(t)).length, monthOpen=open-todayOpen;
+  const nowD=new Date(t0);
+  $('#dtMon').textContent=TH_MON_FULL[nowD.getMonth()];
+  $('#dtDay').textContent=nowD.getDate();
+  $('#dtWd').textContent='วัน'+['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'][nowD.getDay()]+' · '+(nowD.getFullYear()+543);
+  $('#heroTitle').textContent=todayOpen?`วันนี้มี ${todayOpen} งาน`:open?'วันนี้ไม่มีงานค้าง':'เคลียร์งานครบแล้ว';
+  $('#heroStats').innerHTML=(due?`<span class="hstat red">${IC.bell}ครบ/เลยกำหนด ${due}</span>`:'')
+    +(urgent?`<span class="hstat red">${IC.flame}ด่วน ${urgent}</span>`:'')
+    +`<span class="hstat">เดือนนี้อีก ${monthOpen} งาน</span>`
+    +(c.done?`<span class="hstat">เสร็จวันนี้ ${c.done}</span>`:'')
+    +pmHeroChip();
   countUp($('#nAll'),total);countUp($('#nDoing'),c.doing);countUp($('#nTodo'),c.todo);countUp($('#nDone'),c.done);
 
   const q=query.toLowerCase(), order={doing:0,todo:1,done:2};
-  const rows=v.filter(t=>(filter==='all'||t.status===filter)&&(!q||t.title.toLowerCase().includes(q)||(t.note||'').toLowerCase().includes(q)))
+  renderHospFilter(v);
+  const hf=normH(hospFilter);
+  const rows=v.filter(t=>(filter==='all'||t.status===filter)&&(!hf||normH(t.hosp)===hf)&&(!q||[t.title,t.note,t.hosp].join(' ').toLowerCase().includes(q)))
     .sort((a,b)=>order[a.status]-order[b.status]||(a.status==='done'?b.doneAt-a.doneAt:sortOpen(a,b)));
   const ahead=tasks.filter(t=>t.status!=='done'&&t.due!=null&&t.due>monthEnd()).length;
   $('#ahead').innerHTML=ahead?`<button class="ahead glass">${IC.cal}<span>งานเดือนถัดไปอีก <b>${ahead}</b> งาน · ดูในปฏิทิน</span><span style="margin-left:auto">›</span></button>`:'';
-  $('#list').innerHTML=rows.length?rows.map(cardHTML).join('')
-    :`<div class="empty glass">${IC.empty}<b>${q?'ไม่พบงานที่ค้นหา':'ไม่มีงานในหมวดนี้'}</b>กด + ด้านล่างเพื่อเพิ่มงานใหม่</div>`;
-  renderPmSection(q);
+  // PM visits join the same lists (only when showing all / not-started)
+  let pmRows=(filter==='all'||filter==='todo')?pmWindow():[];
+  if(hf)pmRows=pmRows.filter(x=>normH(x.ins.hospital)===hf);
+  if(q)pmRows=pmRows.filter(x=>[x.ins.hospital,x.ins.dept,...(x.ins.items||[]).map(t=>t.desc||t.code)].join(' ').toLowerCase().includes(q));
+  const todayRows=rows.filter(isTodayTask), monthRows=rows.filter(t=>!isTodayTask(t));
+  const pmToday=pmRows.filter(x=>x.t<=t0), pmMonth=pmRows.filter(x=>x.t>t0);
+  let k=0, h='';
+  if(!swipeTipSeen)h+=`<div class="tip glass"><span>ปัดการ์ดไปทางขวา <i style="background:var(--green)"></i> <b>เสร็จแล้ว</b> · ไปทางซ้าย <i style="background:var(--amber)"></i> <b>กำลังทำ</b></span><button id="tipX" aria-label="ปิดคำแนะนำ">×</button></div>`;
+  if(hospFilter)h+=`<div class="tip glass" style="color:var(--teal)">${IC.hosp}<span>แสดงเฉพาะ <b>${esc(hospFilter)}</b></span><button data-hf="" aria-label="ล้างตัวกรอง">×</button></div>`;
+  const todayN=todayRows.filter(t=>t.status!=='done').length+pmToday.length;
+  h+=`<div class="sec-h">งานวันนี้<span class="n">${todayN}</span><span class="sub">${fmt(t0)}</span></div>`;
+  if(todayRows.length||pmToday.length){
+    h+=todayRows.map(t=>cardHTML(t,k++)).join('');
+    if(pmToday.length)h+=`<div class="day-sub" style="color:var(--teal)">นัดเข้าทำ PM</div>`+pmToday.map(x=>pmCardHTML(x,k++)).join('');
+  }else h+=`<div class="today-empty glass">${q?'ไม่พบงานวันนี้ที่ค้นหา':'วันนี้ไม่มีงานที่ครบกำหนด'}</div>`;
+  // this month: grouped by date, tasks without a date at the end
+  const days=new Map();
+  monthRows.forEach(t=>{const key=t.due==null?'none':t.due;if(!days.has(key))days.set(key,{tasks:[],pms:[]});days.get(key).tasks.push(t)});
+  pmMonth.forEach(x=>{if(!days.has(x.t))days.set(x.t,{tasks:[],pms:[]});days.get(x.t).pms.push(x)});
+  const keys=[...days.keys()].sort((a,b)=>a==='none'?1:b==='none'?-1:a-b);
+  const monthN=monthRows.length+pmMonth.length;
+  if(monthN||filter==='all'){
+    h+=`<div class="sec-h month">งานของเดือนนี้<span class="n">${monthN}</span><span class="sub">ถึง ${fmt(monthEnd()).replace(/^\S+ /,'')}</span></div>`;
+    if(!monthN)h+=`<div class="today-empty glass">ไม่มีงานอื่นในเดือนนี้</div>`;
+    keys.forEach(key=>{
+      const g=days.get(key);
+      if(key==='none')h+=`<div class="day-sub">ไม่ระบุวัน</div>`;
+      else{const n=Math.round((key-t0)/DAY);h+=`<div class="day-sub">${fmt(key)}<span>· ${n===1?'พรุ่งนี้':`อีก ${n} วัน`}</span></div>`}
+      h+=g.tasks.map(t=>cardHTML(t,k++)).join('')+g.pms.map(x=>pmCardHTML(x,k++)).join('');
+    });
+  }
+  $('#list').innerHTML=h;
+  $('#pmSection').innerHTML='';
   renderHistory(); renderCalendar(); save();
 }
 
@@ -817,6 +905,7 @@ const pick=(g,v)=>$$(`#${g} button`).forEach(b=>b.classList.toggle('on',b.datase
 function openSheet(t,preDue){
   editing=t||null;
   $('#sheetTitle').textContent=t?'แก้ไขงาน':'เพิ่มงาน';
+  fillHospSelect(t?t.hosp||'':hospFilter||'');
   $('#fTitle').value=t?t.title:''; $('#fNote').value=t?t.note||'':''; $('#fDue').value=t&&t.due!=null?toISO(t.due):(!t&&preDue)?toISO(preDue):'';
   fStatus=t?t.status:'todo'; fPri=t?t.p:'normal'; pick('fStatus',fStatus); pick('fPri',fPri);
   $('#fDel').hidden=!t; $('#fDel').textContent='ลบ'; $('#fDel').dataset.arm=''; $('#fErr').hidden=true;
@@ -833,10 +922,10 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet()});
 $('#sheet').addEventListener('submit',e=>{
   e.preventDefault();
   const title=$('#fTitle').value.trim(); if(!title){const er=$('#fErr');er.hidden=true;void er.offsetWidth;er.hidden=false;$('#fTitle').focus();return}
-  const due=$('#fDue').value?sod(new Date($('#fDue').value+'T00:00')):null, note=$('#fNote').value.trim();
-  if(editing){editing=tasks.find(x=>x.id===editing.id)||(tasks.push(editing),editing);const was=editing.status;Object.assign(editing,{title,note,due,p:fPri,status:fStatus});
+  const due=$('#fDue').value?sod(new Date($('#fDue').value+'T00:00')):null, note=$('#fNote').value.trim(), hosp=$('#fHosp').value;
+  if(editing){editing=tasks.find(x=>x.id===editing.id)||(tasks.push(editing),editing);const was=editing.status;Object.assign(editing,{title,note,due,hosp,p:fPri,status:fStatus});
     if(fStatus==='done'&&was!=='done')editing.doneAt=Date.now(); if(fStatus!=='done')editing.doneAt=null; toast('บันทึกการแก้ไขแล้ว')}
-  else{tasks.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),createdAt:Date.now(),title,note,due,p:fPri,status:fStatus,doneAt:fStatus==='done'?Date.now():null});toast('เพิ่มงานแล้ว')}
+  else{tasks.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),createdAt:Date.now(),title,note,due,hosp,p:fPri,status:fStatus,doneAt:fStatus==='done'?Date.now():null});toast('เพิ่มงานแล้ว')}
   closeSheet(); if(curView==='vHistory')showView('vTasks'); render();
 });
 $('#fDel').addEventListener('click',e=>{
@@ -851,7 +940,7 @@ function showView(id){curView=id;$$('.tab').forEach(x=>x.classList.toggle('on',x
 $$('.tab').forEach(b=>b.addEventListener('click',()=>{showView(b.dataset.v);window.scrollTo({top:0});if(b.dataset.v==='vHistory')renderHistory();if(b.dataset.v==='vCalendar')renderCalendar('in')}));
 
 /* ---- PM visits (from the PM app / sheet tab "PM") shown on this calendar ---- */
-const PM_CACHE='task-kosin-pm-cache', PM_LOCAL='task-kosin-pm-local-v1';
+const PM_CACHE='task-kosin-pm-cache', PM_LOCAL='task-kosin-pm-local-v2';
 let pmInstalls=[];
 IC.wrench='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3.5 17.5l3 3 5.8-5.8a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg>';
 const isoTs=s=>{const p=String(s||'').split('-').map(Number);return p.length===3?new Date(p[0],p[1]-1,p[2]).getTime():NaN};
@@ -872,9 +961,9 @@ function pmSampleInstalls(){
     for(let k=1;k<=years*per;k++){const due=toISO(addM(d0,Math.round(12/per*k)).getTime());pms.push(k<=doneN?{due,done:true,doneDate:due}:{due,done:false})}
     return {id:'s'+Math.random().toString(36).slice(2,9),hospital,dept,installDate:toISO(d0.getTime()),warrantyYears:years,pmPerYear:per,items:items.map(desc=>({code:'',desc,sn:''})),pms,note:'ข้อมูลตัวอย่าง'}};
   return [mk('รพ.อำนาจเจริญ','OR',170,2,2,['IMAGE1 S Camera Control Unit','Power LED 300 Light Source'],0),
-    mk('รพ.ยโสธร','URO',195,2,2,['Flexible Video Uretero-Renoscope'],0),
+    mk('รพ.วารินชำราบ','URO',195,2,2,['Flexible Video Uretero-Renoscope'],0),
     mk('รพ.มุกดาหาร','ANES',345,2,2,['C-MAC Video Laryngoscope'],1),
-    mk('รพ.ศรีสะเกษ','ENT',60,1,4,['IMAGE1 S Camera Head','HOPKINS Telescope 30°'],0),
+    mk('รพ.สรรพสิทธิประสงค์','ENT',60,1,4,['IMAGE1 S Camera Head','HOPKINS Telescope 30°'],0),
     mk('รพ.อำนาจเจริญ','GI',300,1,3,['ENDOFLATOR 40'],2)];
 }
 function pmLoadLocal(){
@@ -912,6 +1001,82 @@ function renderPmSection(q){
     +w.map((x,k)=>pmCardHTML(x,k).replace('<span class="st">',`<span class="st">${fmt(x.t)} · `)).join('');
 }
 document.addEventListener('click',e=>{const a=e.target.closest('a.pm-open');if(!a)return;e.preventDefault();document.body.classList.add('leaving');setTimeout(()=>{location.href='pm.html'},180)});
+
+/* ---- hospitals: list comes from the sheet tab "Hospitals" (editable there) ---- */
+const HOSP_KEY='task-kosin-hospitals';
+const DEFAULT_HOSPITALS=[
+  {name:'รพ.สรรพสิทธิประสงค์',prov:'อุบลราชธานี'},{name:'รพ.วารินชำราบ',prov:'อุบลราชธานี'},{name:'รพ.สมเด็จยุพราชเดชอุดม',prov:'อุบลราชธานี'},
+  {name:'รพ.อุบลรักษ์ ธนบุรี',prov:'อุบลราชธานี'},{name:'รพ.พริ้นซ์ อุบลราชธานี',prov:'อุบลราชธานี'},{name:'รพ.มะเร็งอุบลราชธานี',prov:'อุบลราชธานี'},
+  {name:'รพ.อำนาจเจริญ',prov:'อำนาจเจริญ'},
+  {name:'รพ.มุกดาหาร',prov:'มุกดาหาร'},{name:'รพ.พริ้นซ์ มุกดาหาร',prov:'มุกดาหาร'}];
+let HOSPITALS=(()=>{try{const c=JSON.parse(store.get(HOSP_KEY)||'null');if(Array.isArray(c)&&c.length)return c}catch(e){}return DEFAULT_HOSPITALS})();
+let hospFilter='';
+IC.hosp='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V7l8-4 8 4v14"/><path d="M12 8v6M9 11h6"/><path d="M9 21v-3h6v3"/></svg>';
+// "รพ.สมเด็จพระยุพราชเดชอุดม" and "สมเด็จยุพราชเดชอุดม" are the same hospital
+const normH=s=>String(s||'').replace(/โรงพยาบาล|รพ\.?|พระ|\s/g,'').toLowerCase();
+function setHospitals(list){
+  const clean=list.filter(h=>h&&h.name).map(h=>({name:String(h.name).trim(),prov:String(h.prov||'').trim()}));
+  if(!clean.length)return; HOSPITALS=clean; store.set(HOSP_KEY,JSON.stringify(clean));
+}
+function fillHospSelect(cur){
+  const groups=new Map(); HOSPITALS.forEach(h=>{const g=h.prov?'จ.'+h.prov:'อื่นๆ';if(!groups.has(g))groups.set(g,[]);groups.get(g).push(h.name)});
+  let o='<option value="">— ไม่ระบุ —</option>';
+  groups.forEach((names,g)=>{o+=`<optgroup label="${esc(g)}">${names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('')}</optgroup>`});
+  if(cur&&!HOSPITALS.some(h=>h.name===cur))o+=`<option value="${esc(cur)}">${esc(cur)}</option>`;
+  const sel=$('#fHosp'); sel.innerHTML=o; sel.value=cur||'';
+}
+function renderHospFilter(v){
+  const count=new Map();
+  v.filter(t=>t.status!=='done'&&t.hosp).forEach(t=>{const k=normH(t.hosp);count.set(k,(count.get(k)||0)+1)});
+  pmWindow().forEach(x=>{const k=normH(x.ins.hospital);count.set(k,(count.get(k)||0)+1)});
+  const list=HOSPITALS.filter(h=>count.has(normH(h.name))||normH(h.name)===normH(hospFilter));
+  const el=$('#hfilter');
+  el.innerHTML=list.length?`<button data-hf="" class="${hospFilter?'':'on'}">ทุก รพ.</button>`+list.map(h=>`<button data-hf="${esc(h.name)}" class="${normH(h.name)===normH(hospFilter)?'on':''}">${IC.hosp}${esc(shortHosp(h.name))}<b>${count.get(normH(h.name))||0}</b></button>`).join(''):'';
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-hf]'); if(b){hospFilter=b.dataset.hf;render();return}
+  if(e.target.closest('#tipX')){swipeTipSeen=true;store.set('task-kosin-swipe-tip','1');render()}
+});
+let swipeTipSeen=store.get('task-kosin-swipe-tip')==='1';
+
+/* ---- swipe a task card: right = done, left = in progress ---- */
+(function cardSwipe(){
+  let card=null,wrap=null,x0=0,y0=0,dx=0,axis=null,pid=null,moved=false,t0=0,raf=0;
+  const TH=80;
+  document.addEventListener('pointerdown',e=>{
+    const c=e.target.closest('.swipe > .card'); if(!c||(e.pointerType==='mouse'&&e.button!==0))return;
+    c.style.animation='none'; // an ended entry animation would otherwise pin transform
+    card=c;wrap=c.parentElement;x0=e.clientX;y0=e.clientY;dx=0;axis=null;pid=e.pointerId;moved=false;t0=performance.now();
+  },true);
+  document.addEventListener('pointermove',e=>{
+    if(!card||e.pointerId!==pid)return;
+    const mx=e.clientX-x0,my=e.clientY-y0;
+    if(axis===null&&Math.hypot(mx,my)>8){axis=Math.abs(mx)>=Math.abs(my)?'x':'y';if(axis==='x'){card.style.transition='none';wrap.classList.add('dragging');try{card.setPointerCapture(pid)}catch(_){}}}
+    if(axis!=='x')return;
+    e.preventDefault();
+    moved=true; dx=mx;
+    cancelAnimationFrame(raf); const c=card; raf=requestAnimationFrame(()=>{c.style.transform=`translate3d(${dx}px,0,0)`});
+    wrap.classList.toggle('r',dx>0); wrap.classList.toggle('l',dx<0);
+    wrap.classList.toggle('back',(dx>0&&wrap.dataset.r==='todo')||(dx<0&&wrap.dataset.l==='todo'));
+    wrap.classList.toggle('armed',Math.abs(dx)>TH);
+  },{capture:true,passive:false});
+  const end=e=>{
+    if(!card||(e&&e.pointerId!==pid))return;
+    const c=card,w=wrap,d=dx,ax=axis,fast=Math.abs(d)/Math.max(1,performance.now()-t0)>0.6; card=null;
+    cancelAnimationFrame(raf); w.classList.remove('dragging');
+    if(ax!=='x')return;
+    c.style.transition='transform .25s cubic-bezier(.2,.8,.2,1)';
+    if(Math.abs(d)>TH||(fast&&Math.abs(d)>40)){
+      const to=d>0?w.dataset.r:w.dataset.l;
+      c.style.transform=`translate3d(${d>0?110:-110}%,0,0)`;
+      if(to==='done')burst(c.querySelector('.ico'));
+      setTimeout(()=>setStatus(w.dataset.sid,to),210);
+    }else{c.style.transform='';setTimeout(()=>w.classList.remove('r','l','armed','back'),260)}
+    setTimeout(()=>{moved=false},60);
+  };
+  document.addEventListener('pointerup',end,true); document.addEventListener('pointercancel',end,true);
+  document.addEventListener('click',e=>{if(moved&&e.target.closest('.swipe')){e.stopImmediatePropagation();e.preventDefault()}},true);
+})();
 
 /* ---- calendar ---- */
 const TH_MON_FULL=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];

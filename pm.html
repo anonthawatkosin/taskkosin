@@ -218,7 +218,7 @@ pre.csv{white-space:pre;overflow:auto;background:var(--field);padding:10px;borde
 (function(){
 const MONTHS=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
 const MONTHS_FULL=["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
-const LS_KEY="task-kosin-pm-local-v1";
+const LS_KEY="task-kosin-pm-local-v2";
 const state={sample:null,calY:new Date().getFullYear(),calM:new Date().getMonth(),calSel:null,installs:[],mode:"loading",tab:"pm",q:"",filter:"all",showDone:false,db:null,downloads:null};
 
 /* ---------- utils ---------- */
@@ -309,9 +309,9 @@ function sampleInstalls(){
   const mk=(hospital,dept,ago,years,per,items,doneN,note)=>{const installDate=back(ago);const pms=genDates(installDate,per,years).map((d,k)=>k<doneN?{due:d,done:true,doneDate:d}:{due:d,done:false});return{id:uid(),hospital,dept,installDate,warrantyYears:years,pmPerYear:per,items,pms,note:note||""}};
   return [
     mk("รพ.อำนาจเจริญ","OR",170,2,2,[{code:"",desc:"IMAGE1 S Camera Control Unit",sn:"[S/N]"},{code:"",desc:"Power LED 300 Light Source",sn:""}],0,"ข้อมูลตัวอย่าง"),
-    mk("รพ.ยโสธร","URO",195,2,2,[{code:"",desc:"Flexible Video Uretero-Renoscope",sn:"[S/N]"}],0,"ข้อมูลตัวอย่าง"),
+    mk("รพ.วารินชำราบ","URO",195,2,2,[{code:"",desc:"Flexible Video Uretero-Renoscope",sn:"[S/N]"}],0,"ข้อมูลตัวอย่าง"),
     mk("รพ.มุกดาหาร","ANES",345,2,2,[{code:"",desc:"C-MAC Video Laryngoscope",sn:"[S/N]"}],1,"ข้อมูลตัวอย่าง"),
-    mk("รพ.ศรีสะเกษ","ENT",60,1,4,[{code:"",desc:"IMAGE1 S Camera Head",sn:"[S/N]"},{code:"",desc:"HOPKINS Telescope 30°",sn:"[S/N]"}],0,"ข้อมูลตัวอย่าง"),
+    mk("รพ.สรรพสิทธิประสงค์","ENT",60,1,4,[{code:"",desc:"IMAGE1 S Camera Head",sn:"[S/N]"},{code:"",desc:"HOPKINS Telescope 30°",sn:"[S/N]"}],0,"ข้อมูลตัวอย่าง"),
     mk("รพ.อำนาจเจริญ","GI",300,1,3,[{code:"",desc:"ENDOFLATOR 40",sn:"[S/N]"}],2,"ข้อมูลตัวอย่าง")
   ];
 }
@@ -515,7 +515,8 @@ Rules: set found to false if you do not actually recognize this specific article
 function openForm(id){
   const ins=id?state.installs.find(x=>x.id===id):null;
   const v=ins?clone(ins):{hospital:"",dept:"",installDate:iso(todayD()),warrantyYears:1,pmPerYear:2,items:[{code:"",desc:"",sn:""}],pms:[],note:""};
-  const hosps=[...new Set(state.installs.map(i=>i.hospital))];
+  let listH=[];try{listH=(JSON.parse(localStorage.getItem("task-kosin-hospitals")||"[]")||[]).map(h=>h.name).filter(Boolean)}catch(e){}
+  const hosps=[...new Set([...listH,...state.installs.map(i=>i.hospital)])]; // hospitals from the sheet tab "Hospitals" first
   const opt=(arr,val)=>arr.map(n=>`<option value="${n}" ${Number(val)===n?"selected":""}>${n}</option>`).join("");
   openModal(`<h3>${ins?"แก้ไขงานติดตั้ง":"เพิ่มงานติดตั้ง"}</h3><div class="sub">ใส่วันติดตั้ง ระยะประกัน และจำนวนรอบ PM ระบบจะสร้างตาราง PM ให้เอง</div>
     <label class="f" for="fH">โรงพยาบาล</label><input class="in-f" id="fH" list="hlist" value="${esc(v.hospital)}" placeholder="เช่น รพ.อำนาจเจริญ"><datalist id="hlist">${hosps.map(h=>`<option value="${esc(h)}">`).join("")}</datalist>
