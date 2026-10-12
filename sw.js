@@ -1,6 +1,6 @@
 // Task Kosin service worker — caches the app shell so it opens instantly and offline.
 // Task data always comes from the Google Sheet API (never cached here).
-const VERSION = 'task-kosin-v4';
+const VERSION = 'task-kosin-v5';
 const SHELL = [
   './',
   './index.html',

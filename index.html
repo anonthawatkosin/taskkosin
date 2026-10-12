@@ -20,6 +20,7 @@
   --bg:#FFF8F8; --surface:#FFFFFF; --soft:#F6EEF0; --fg:#1B1214; --muted:#86757A; --line:#EEE2E4;
   --red:#E0122E; --red-2:#FF5A6E; --red-soft:#FDEBEE; --on-red:#FFFFFF;
   --amber:#D27600; --amber-soft:#FFF2DF; --green:#158F57; --green-soft:#E2F5EB;
+  --teal:#1D5C6B; --teal-soft:#E1EEF0;
   --glass:rgba(255,255,255,.58); --glass-strong:rgba(255,255,255,.8); --glass-line:rgba(255,255,255,.95);
   --shadow:0 14px 34px -16px rgba(160,10,30,.3);
   --particle:224,18,46;
@@ -31,13 +32,13 @@
   --red:#FF2F4C; --red-2:#FF7A8B; --red-soft:#3B141B; --on-red:#FFFFFF;
   --amber:#FFA93A; --amber-soft:#382510; --green:#3ED08C; --green-soft:#0F2D20;
   --glass:rgba(32,20,25,.55); --glass-strong:rgba(32,20,25,.85); --glass-line:rgba(255,255,255,.08);
-  --shadow:0 14px 34px -16px rgba(0,0,0,.8); --particle:255,90,110; color-scheme:dark}}
+  --shadow:0 14px 34px -16px rgba(0,0,0,.8); --particle:255,90,110; --teal:#5FB3C6; --teal-soft:#16303A; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0F0A0C; --surface:#1B1417; --soft:#221A1D; --fg:#F7EEF0; --muted:#A8969B; --line:#30252A;
   --red:#FF2F4C; --red-2:#FF7A8B; --red-soft:#3B141B; --on-red:#FFFFFF;
   --amber:#FFA93A; --amber-soft:#382510; --green:#3ED08C; --green-soft:#0F2D20;
   --glass:rgba(32,20,25,.55); --glass-strong:rgba(32,20,25,.85); --glass-line:rgba(255,255,255,.08);
-  --shadow:0 14px 34px -16px rgba(0,0,0,.8); --particle:255,90,110; color-scheme:dark}
+  --shadow:0 14px 34px -16px rgba(0,0,0,.8); --particle:255,90,110; --teal:#5FB3C6; --teal-soft:#16303A; color-scheme:dark}
 
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -186,6 +187,27 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .tchip.doing{--c:var(--amber);background:var(--amber-soft);color:var(--amber)}
 .tchip.done{--c:var(--green);background:var(--green-soft);color:var(--green);text-decoration:line-through}
 .tchip.high{--c:var(--red);background:var(--red-soft);color:var(--red)}
+/* PM visits from the PM app: teal, like the PM app */
+.tchip.pmc{--c:var(--teal);background:var(--teal-soft);color:var(--teal)}
+.tchip.pmc.late{border-left-color:var(--red);color:var(--red)}
+.tchip.pmc.done{opacity:.7;text-decoration:line-through}
+.pm-day-h{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--teal);margin:16px 4px 8px}
+.pm-day-h svg{width:16px;height:16px}
+.pmcard{display:flex;align-items:center;gap:12px;border-radius:18px;padding:12px 14px;margin-bottom:10px;text-decoration:none;color:var(--fg);animation:cardIn .5s both;border-left:4px solid var(--teal)!important}
+.pmcard.late{border-left-color:var(--red)!important}
+.pmcard .pmtag{flex:none;width:46px;border-radius:6px 6px 10px 10px;text-align:center;padding:9px 0 4px;background:#F4C531;color:#2A2208;position:relative;line-height:1.1}
+.pmcard .pmtag::before{content:"";position:absolute;top:3px;left:50%;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:var(--surface)}
+.pmcard.late .pmtag{background:var(--red);color:#fff}
+.pmcard.done .pmtag{background:var(--green-soft);color:var(--green)}
+.pmcard .pmtag b{display:block;font-size:13px}
+.pmcard .pmtag small{display:block;font-size:10px}
+.pmcard .info{flex:1;min-width:0}
+.pmcard .ttl{display:block;font-weight:600}
+.pmcard .ttl em{font-style:normal;font-weight:400;color:var(--muted);font-size:12.5px;margin-left:4px}
+.pmcard .meta{display:block;font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pmcard .st{font-size:12.5px;font-weight:600;color:var(--teal)}
+.pmcard.late .st{color:var(--red)}.pmcard.done .st{color:var(--green)}
+.pmcard .go{color:var(--muted);font-size:20px}
 .tmore{font-size:10px;color:var(--muted);text-align:center;font-weight:600;line-height:1.2}
 .swipe-hint{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11.5px;color:var(--muted);margin-top:8px}
 .swipe-hint i{display:inline-block;width:18px;height:3px;border-radius:3px;background:var(--line)}
@@ -382,7 +404,7 @@ img{max-width:100%}
       <div class="cal-head"><button class="cnav" id="calPrev" aria-label="เดือนก่อน">‹</button><h2 id="calTitle"></h2><button class="cnav" id="calNext" aria-label="เดือนถัดไป">›</button></div>
       <div class="cal-grid dows"><span>อา</span><span>จ</span><span>อ</span><span>พ</span><span>พฤ</span><span>ศ</span><span>ส</span></div>
       <div class="cal-grid" id="calGrid"></div>
-      <div class="legend"><span><i style="background:var(--muted)"></i>ยังไม่เริ่ม</span><span><i style="background:var(--amber)"></i>กำลังทำ</span><span><i style="background:var(--green)"></i>เสร็จแล้ว</span><span><i style="background:var(--red)"></i>ด่วน</span></div>
+      <div class="legend"><span><i style="background:var(--muted)"></i>ยังไม่เริ่ม</span><span><i style="background:var(--amber)"></i>กำลังทำ</span><span><i style="background:var(--green)"></i>เสร็จแล้ว</span><span><i style="background:var(--red)"></i>ด่วน</span><span><i style="background:var(--teal)"></i>นัด PM</span></div>
       <div class="swipe-hint"><i></i>ปัดซ้าย–ขวาเพื่อเปลี่ยนเดือน<i></i></div>
     </div>
     <div class="day-head"><h3 id="dayTitle"></h3><button class="addDay" id="addDay">+ เพิ่มงานวันนี้</button></div>
@@ -563,11 +585,13 @@ function applyServer(r,fromCache){
 async function refresh(){
   if(mode!=='sheet'||pending)return;
   try{applyServer(await gas('apiList'))}catch(e){console.warn(e);setSync('error')}
+  pmRefresh();
 }
 function startLocal(){
   mode='local';
   try{const s=store.get(KEY);tasks=s?JSON.parse(s):sample()}catch(e){tasks=sample()}
   tasks=tasks.filter(notExpired); loaded=true; setSync('local');
+  pmLoadLocal();
   $('#modeNote').innerHTML='โหมดทดลอง · ข้อมูลตัวอย่างเก็บในเครื่องนี้ · <button class="link" id="openConn">เชื่อมต่อ Google Sheet</button>';
   renderSettings(); render();
 }
@@ -576,10 +600,12 @@ async function boot(){
   mode='sheet';
   $('#modeNote').textContent='ข้อมูลบันทึกลง Google Sheet · แตะชื่องานเพื่อแก้ไข';
   // show the last copy instantly, then fetch fresh
+  pmLoadLocal();
   try{const c=JSON.parse(store.get(CACHE_KEY)||'null');if(c)applyServer(c,true)}catch(e){}
   if(!loaded)render();
   try{applyServer(await gas('apiList'))}
   catch(e){console.warn(e);setSync('error');if(!loaded){loaded=true;render()}toast('โหลดข้อมูลจากชีตไม่ได้: '+((e&&e.message)||''))}
+  pmRefresh();
   // keep phone, iPad and computer in step
   setInterval(()=>{if(document.visibilityState==='visible')refresh()},45000);
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh()});
@@ -813,6 +839,47 @@ let curView='vTasks';
 function showView(id){curView=id;$$('.tab').forEach(x=>x.classList.toggle('on',x.dataset.v===id));$$('.view').forEach(v=>v.classList.toggle('on',v.id===id))}
 $$('.tab').forEach(b=>b.addEventListener('click',()=>{showView(b.dataset.v);window.scrollTo({top:0});if(b.dataset.v==='vHistory')renderHistory();if(b.dataset.v==='vCalendar')renderCalendar('in')}));
 
+/* ---- PM visits (from the PM app / sheet tab "PM") shown on this calendar ---- */
+const PM_CACHE='task-kosin-pm-cache', PM_LOCAL='task-kosin-pm-local-v1';
+let pmInstalls=[];
+IC.wrench='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3.5 17.5l3 3 5.8-5.8a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg>';
+const isoTs=s=>{const p=String(s||'').split('-').map(Number);return p.length===3?new Date(p[0],p[1]-1,p[2]).getTime():NaN};
+const shortHosp=h=>String(h||'').replace(/^รพ\.?\s*/,'').replace(/^สมเด็จพระยุพราช/,'');
+const pmSt=p=>p.done?'done':isoTs(p.due)<T0()?'late':'open';
+function pmOn(ts){const out=[];pmInstalls.forEach(ins=>(ins.pms||[]).forEach((p,i)=>{if(isoTs(p.due)===ts)out.push({ins,p,i})}));return out}
+function pmCardHTML(x,k){
+  const {ins,p,i}=x, st=pmSt(p), n=Math.round((isoTs(p.due)-T0())/DAY);
+  const stTxt=st==='done'?'ทำแล้ว':n<0?`เลยกำหนด ${-n} วัน`:n===0?'ครบกำหนดวันนี้':`อีก ${n} วัน`;
+  const its=(ins.items||[]).map(t=>t.desc||t.code).filter(Boolean).join(', ');
+  return `<a class="pmcard glass ${st}" href="pm.html" style="animation-delay:${(k||0)*45}ms"><span class="pmtag"><b>PM</b><small>${i+1}/${(ins.pms||[]).length}</small></span>
+    <span class="info"><span class="ttl">${esc(ins.hospital)}${ins.dept?`<em>${esc(ins.dept)}</em>`:''}</span><span class="meta">${esc(its||'—')}</span><span class="st">${stTxt}</span></span><span class="go">›</span></a>`;
+}
+function pmSampleInstalls(){
+  const t=new Date(T0()), back=n=>new Date(t.getFullYear(),t.getMonth(),t.getDate()-n);
+  const addM=(d,n)=>{const x=new Date(d.getFullYear(),d.getMonth()+n,1);x.setDate(Math.min(d.getDate(),new Date(x.getFullYear(),x.getMonth()+1,0).getDate()));return x};
+  const mk=(hospital,dept,ago,years,per,items,doneN)=>{const d0=back(ago),pms=[];
+    for(let k=1;k<=years*per;k++){const due=toISO(addM(d0,Math.round(12/per*k)).getTime());pms.push(k<=doneN?{due,done:true,doneDate:due}:{due,done:false})}
+    return {id:'s'+Math.random().toString(36).slice(2,9),hospital,dept,installDate:toISO(d0.getTime()),warrantyYears:years,pmPerYear:per,items:items.map(desc=>({code:'',desc,sn:''})),pms,note:'ข้อมูลตัวอย่าง'}};
+  return [mk('รพ.อำนาจเจริญ','OR',170,2,2,['IMAGE1 S Camera Control Unit','Power LED 300 Light Source'],0),
+    mk('รพ.ยโสธร','URO',195,2,2,['Flexible Video Uretero-Renoscope'],0),
+    mk('รพ.มุกดาหาร','ANES',345,2,2,['C-MAC Video Laryngoscope'],1),
+    mk('รพ.ศรีสะเกษ','ENT',60,1,4,['IMAGE1 S Camera Head','HOPKINS Telescope 30°'],0),
+    mk('รพ.อำนาจเจริญ','GI',300,1,3,['ENDOFLATOR 40'],2)];
+}
+function pmLoadLocal(){
+  try{
+    const s=store.get(mode==='local'?PM_LOCAL:PM_CACHE);
+    if(s)pmInstalls=JSON.parse(s)||[];
+    else if(mode==='local'){pmInstalls=pmSampleInstalls();store.set(PM_LOCAL,JSON.stringify(pmInstalls))}
+  }catch(e){pmInstalls=[]}
+}
+async function pmRefresh(){
+  if(mode!=='sheet')return;
+  try{const l=await api('pmList');pmInstalls=Array.isArray(l)?l:[];store.set(PM_CACHE,JSON.stringify(pmInstalls));renderCalendar()}
+  catch(e){console.warn('PM list',e)}
+}
+document.addEventListener('click',e=>{const a=e.target.closest('a.pmcard');if(!a)return;e.preventDefault();document.body.classList.add('leaving');setTimeout(()=>{location.href=a.getAttribute('href')},180)});
+
 /* ---- calendar ---- */
 const TH_MON_FULL=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 let calY=new Date().getFullYear(), calM=new Date().getMonth(), selDay=T0();
@@ -825,8 +892,11 @@ function renderCalendar(dir){
     const d=new Date(calY,calM,1-first.getDay()+i), k=d.getTime();
     if(i===35&&d.getMonth()!==calM)break; // drop an all-next-month last row
     const items=tasks.filter(t=>t.due===k).sort((a,b)=>({doing:0,todo:1,done:2}[a.status])-({doing:0,todo:1,done:2}[b.status])||(b.p==='high')-(a.p==='high'));
-    const show=items.slice(0,2), more=items.length-show.length;
-    cells+=`<button class="dcell${d.getMonth()!==calM?' out':''}${k===t0?' today':''}${k===selDay?' sel':''}" data-k="${k}" aria-label="${fmt(k)} ${items.length} งาน"><span class="dnum">${d.getDate()}</span>${show.map(t=>`<span class="tchip ${t.status}${t.p==='high'&&t.status==='todo'?' high':''}">${esc(t.title)}</span>`).join('')}${more>0?`<span class="tmore">+${more}</span>`:''}</button>`;
+    const pms=pmOn(k);
+    const chips=[...items.map(t=>`<span class="tchip ${t.status}${t.p==='high'&&t.status==='todo'?' high':''}">${esc(t.title)}</span>`),
+                 ...pms.map(x=>`<span class="tchip pmc ${pmSt(x.p)}">PM ${esc(shortHosp(x.ins.hospital))}</span>`)];
+    const show=chips.slice(0,2), more=chips.length-show.length;
+    cells+=`<button class="dcell${d.getMonth()!==calM?' out':''}${k===t0?' today':''}${k===selDay?' sel':''}" data-k="${k}" aria-label="${fmt(k)} ${items.length} งาน${pms.length?` นัด PM ${pms.length}`:''}"><span class="dnum">${d.getDate()}</span>${show.join('')}${more>0?`<span class="tmore">+${more}</span>`:''}</button>`;
   }
   const g=$('#calGrid'); g.innerHTML=cells;
   if(dir){g.classList.remove('slide-l','slide-r');void g.offsetWidth;g.classList.add(dir==='prev'?'slide-r':'slide-l')}
@@ -836,10 +906,12 @@ function renderDay(){
   const items=tasks.filter(t=>t.due===selDay).sort((a,b)=>({doing:0,todo:1,done:2}[a.status])-({doing:0,todo:1,done:2}[b.status])||sortOpen(a,b));
   const ago=Math.round((selDay-T0())/DAY);
   const rel=ago===0?'วันนี้':ago===1?'พรุ่งนี้':ago===-1?'เมื่อวาน':ago>0?`อีก ${ago} วัน`:`${-ago} วันก่อน`;
-  $('#dayTitle').innerHTML=`${fmt(selDay)} <span>· ${rel} · ${items.length} งาน</span>`;
+  const pms=pmOn(selDay);
+  $('#dayTitle').innerHTML=`${fmt(selDay)} <span>· ${rel} · ${items.length} งาน${pms.length?` · นัด PM ${pms.length}`:''}</span>`;
   $('#addDay').textContent=ago===0?'+ เพิ่มงานวันนี้':'+ เพิ่มงานวันนี้'.replace('วันนี้','วันที่ '+new Date(selDay).getDate());
-  $('#dayList').innerHTML=items.length?items.map(cardHTML).join('')
-    :`<div class="empty glass">${IC.empty}<b>ยังไม่มีงานในวันนี้</b>กด "+ เพิ่มงาน" เพื่อวางแผนล่วงหน้า</div>`;
+  $('#dayList').innerHTML=(items.length?items.map(cardHTML).join('')
+    :pms.length?'':`<div class="empty glass">${IC.empty}<b>ยังไม่มีงานในวันนี้</b>กด "+ เพิ่มงาน" เพื่อวางแผนล่วงหน้า</div>`)
+    +(pms.length?`<div class="pm-day-h">${IC.wrench}นัดเข้าทำ PM</div>`+pms.map(pmCardHTML).join(''):'');
 }
 $('#calGrid').addEventListener('click',e=>{const b=e.target.closest('.dcell');if(!b)return;selDay=+b.dataset.k;
   const d=new Date(selDay); if(d.getMonth()!==calM){const dir=d<new Date(calY,calM,1)?'prev':'next';calY=d.getFullYear();calM=d.getMonth();renderCalendar(dir)}else renderCalendar()});
