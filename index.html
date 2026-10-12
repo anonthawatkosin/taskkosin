@@ -208,6 +208,14 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .pmcard .st{font-size:12.5px;font-weight:600;color:var(--teal)}
 .pmcard.late .st{color:var(--red)}.pmcard.done .st{color:var(--green)}
 .pmcard .go{color:var(--muted);font-size:20px}
+/* PM section on the main tab */
+.pm-sec-h{display:flex;align-items:center;gap:8px;margin:26px 4px 10px;font-family:var(--f-display);font-size:16px;color:var(--teal)}
+.pm-sec-h svg{width:18px;height:18px;animation:wrench 3.2s ease-in-out infinite;transform-origin:12px 12px}
+.pm-sec-h .n{font-family:var(--f-body);font-size:12px;font-weight:500;background:var(--teal-soft);color:var(--teal);border-radius:99px;padding:0 8px}
+.pm-sec-h a{margin-left:auto;font-family:var(--f-body);font-size:13px;font-weight:600;color:var(--teal);text-decoration:none}
+.pmcard .when{font-size:12px;color:var(--muted);margin-left:6px;font-weight:400}
+.hstat.teal{color:var(--teal);background:var(--teal-soft)}
+.hstat.teal svg{width:13px;height:13px}
 .tmore{font-size:10px;color:var(--muted);text-align:center;font-weight:600;line-height:1.2}
 .swipe-hint{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11.5px;color:var(--muted);margin-top:8px}
 .swipe-hint i{display:inline-block;width:18px;height:3px;border-radius:3px;background:var(--line)}
@@ -392,6 +400,7 @@ img{max-width:100%}
 
     <div id="ahead"></div>
     <div class="list" id="list"></div>
+    <div id="pmSection"></div>
     <p class="demo" id="modeNote">แตะชื่องานเพื่อแก้ไข</p>
   </section>
 
@@ -722,6 +731,7 @@ function render(){
   $('#heroStats').innerHTML=(urgent?`<span class="hstat red">${IC.flame}ด่วน ${urgent}</span>`:'')
     +(due?`<span class="hstat red">${IC.bell}ครบ/เลยกำหนด ${due}</span>`:'')
     +`<span class="hstat">เสร็จ ${c.done} จาก ${total}</span>`
+    +pmHeroChip()
     +`<span class="hstat">งานถึง ${fmt(monthEnd()).replace(/^\S+ /,'')}</span>`;
   countUp($('#nAll'),total);countUp($('#nDoing'),c.doing);countUp($('#nTodo'),c.todo);countUp($('#nDone'),c.done);
 
@@ -732,6 +742,7 @@ function render(){
   $('#ahead').innerHTML=ahead?`<button class="ahead glass">${IC.cal}<span>งานเดือนถัดไปอีก <b>${ahead}</b> งาน · ดูในปฏิทิน</span><span style="margin-left:auto">›</span></button>`:'';
   $('#list').innerHTML=rows.length?rows.map(cardHTML).join('')
     :`<div class="empty glass">${IC.empty}<b>${q?'ไม่พบงานที่ค้นหา':'ไม่มีงานในหมวดนี้'}</b>กด + ด้านล่างเพื่อเพิ่มงานใหม่</div>`;
+  renderPmSection(q);
   renderHistory(); renderCalendar(); save();
 }
 
@@ -875,10 +886,32 @@ function pmLoadLocal(){
 }
 async function pmRefresh(){
   if(mode!=='sheet')return;
-  try{const l=await api('pmList');pmInstalls=Array.isArray(l)?l:[];store.set(PM_CACHE,JSON.stringify(pmInstalls));renderCalendar()}
+  try{const l=await api('pmList');pmInstalls=Array.isArray(l)?l:[];store.set(PM_CACHE,JSON.stringify(pmInstalls));render()}
   catch(e){console.warn('PM list',e)}
 }
 document.addEventListener('click',e=>{const a=e.target.closest('a.pmcard');if(!a)return;e.preventDefault();document.body.classList.add('leaving');setTimeout(()=>{location.href=a.getAttribute('href')},180)});
+
+/* ---- PM visits on the main tab: overdue + due by the end of this month ---- */
+function pmWindow(){
+  const me=monthEnd(),out=[];
+  pmInstalls.forEach(ins=>(ins.pms||[]).forEach((p,i)=>{if(!p.done){const t=isoTs(p.due);if(t<=me)out.push({ins,p,i,t})}}));
+  return out.sort((a,b)=>a.t-b.t);
+}
+function pmHeroChip(){
+  const w=pmWindow(); if(!w.length)return '';
+  const late=w.filter(x=>x.t<T0()).length;
+  return `<span class="hstat ${late?'red':'teal'}">${IC.wrench}นัด PM ${w.length}${late?` · เลย ${late}`:''}</span>`;
+}
+function renderPmSection(q){
+  const el=$('#pmSection'); if(!el)return;
+  if(filter!=='all'&&filter!=='todo'){el.innerHTML='';return}
+  let w=pmWindow();
+  if(q)w=w.filter(x=>[x.ins.hospital,x.ins.dept,...(x.ins.items||[]).map(t=>t.desc||t.code)].join(' ').toLowerCase().includes(q));
+  if(!w.length){el.innerHTML='';return}
+  el.innerHTML=`<div class="pm-sec-h">${IC.wrench}นัดเข้าทำ PM ถึงสิ้นเดือน<span class="n">${w.length}</span><a href="pm.html" class="pm-open">เปิดงาน PM ›</a></div>`
+    +w.map((x,k)=>pmCardHTML(x,k).replace('<span class="st">',`<span class="st">${fmt(x.t)} · `)).join('');
+}
+document.addEventListener('click',e=>{const a=e.target.closest('a.pm-open');if(!a)return;e.preventDefault();document.body.classList.add('leaving');setTimeout(()=>{location.href='pm.html'},180)});
 
 /* ---- calendar ---- */
 const TH_MON_FULL=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
