@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>งาน PM · Task Kosin</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="task-kosin-32.png">
+<link rel="apple-touch-icon" href="task-kosin-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Task Kosin">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF2F1; --surface:#FFFFFF; --ink:#16262E; --muted:#5E6F77; --line:#D5DDDC;
+  --tag:#F4C531; --tag-ink:#2A2208; --late:#C23B26; --late-bg:#FBE9E5; --ok:#2B7A56; --ok-bg:#E3F1EA;
+  --accent:#1D5C6B; --accent-ink:#FFFFFF; --field:#F6F8F8;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1A1E; --surface:#17252A; --ink:#E6EDEE; --muted:#93A4AB; --line:#2A3A40;
+    --tag:#E8B923; --tag-ink:#231B05; --late:#F07A63; --late-bg:#3A1F1A; --ok:#62C396; --ok-bg:#16302A;
+    --accent:#5FB3C6; --accent-ink:#0B1A1E; --field:#1D2E34;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1A1E; --surface:#17252A; --ink:#E6EDEE; --muted:#93A4AB; --line:#2A3A40;
+  --tag:#E8B923; --tag-ink:#231B05; --late:#F07A63; --late-bg:#3A1F1A; --ok:#62C396; --ok-bg:#16302A;
+  --accent:#5FB3C6; --accent-ink:#0B1A1E; --field:#1D2E34;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans Thai",Tahoma,"Leelawadee UI",sans-serif;font-size:16px;line-height:1.55;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px 110px}
+
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:14px 0 10px;border-bottom:1px solid var(--line)}
+.top-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+h1{font-size:1.45rem;margin:0;font-weight:700;letter-spacing:-.01em}
+.today{color:var(--muted);font-size:.9rem}
+.iconbtn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 12px;font-size:.9rem}
+
+.summary{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.pill{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 12px;font-size:.88rem}
+.pill b{font-weight:700}
+.pill.late{border-color:transparent;background:var(--late-bg);color:var(--late)}
+.pill.soon{border-color:transparent;background:var(--tag);color:var(--tag-ink)}
+
+h2{font-size:1.02rem;margin:26px 0 10px;font-weight:600;display:flex;align-items:baseline;gap:8px}
+h2 small{color:var(--muted);font-weight:400;font-size:.85rem}
+
+/* PM row with inspection-tag date */
+.row{display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:8px}
+.row + .row{margin-top:0}
+.tag{flex:none;width:62px;border-radius:6px 6px 10px 10px;background:var(--tag);color:var(--tag-ink);text-align:center;padding:12px 0 6px;position:relative;line-height:1.1}
+.tag::before{content:"";position:absolute;top:4px;left:50%;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:var(--surface);box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+.tag .d{font-size:1.45rem;font-weight:700;display:block}
+.tag .m{font-size:.74rem;font-weight:600;display:block}
+.tag .y{font-size:.66rem;opacity:.75;display:block}
+.tag.late{background:var(--late);color:#fff}
+.tag.done{background:var(--ok-bg);color:var(--ok)}
+.tag.later{background:var(--field);color:var(--ink);box-shadow:inset 0 3px 0 var(--tag)}
+.row .body{flex:1;min-width:0;cursor:pointer}
+.row .hosp{font-weight:600}
+.row .dept{color:var(--muted);font-weight:400;font-size:.85rem;margin-left:4px}
+.row .items{color:var(--muted);font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .when{font-size:.84rem;margin-top:2px}
+.when.late{color:var(--late);font-weight:600}
+.when.done{color:var(--ok)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 14px;font-weight:500;white-space:nowrap}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--late);border-color:var(--late)}
+.btn.small{padding:6px 10px;font-size:.86rem}
+.btn:disabled{opacity:.5;cursor:default}
+
+.month{margin:22px 0 8px;color:var(--muted);font-size:.9rem;font-weight:600}
+.toggle-line{display:flex;align-items:center;gap:8px;margin-top:22px;color:var(--muted);font-size:.9rem}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:12px;padding:22px;text-align:center;color:var(--muted)}
+
+/* hospitals */
+.search{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:11px 14px;margin-top:16px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 4px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:.86rem}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.hcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-top:12px;overflow:hidden}
+.hcard > .hname{padding:12px 14px 4px;font-weight:700;font-size:1.05rem}
+.inst{display:block;width:100%;text-align:left;border:0;border-top:1px solid var(--line);background:none;padding:10px 14px}
+.hcard > .hname + .inst{border-top:0}
+.inst .l1{display:flex;justify-content:space-between;gap:10px;font-size:.92rem}
+.inst .l2{color:var(--muted);font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.flags{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.flag{font-size:.76rem;border-radius:6px;padding:1px 8px;background:var(--late-bg);color:var(--late)}
+.flag.warn{background:var(--field);color:var(--muted);border:1px solid var(--line)}
+.flag.ok{background:var(--ok-bg);color:var(--ok)}
+
+/* calendar */
+.calhead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:18px}
+.calhead .mname{font-size:1.15rem;font-weight:700}
+.calnav{display:flex;gap:6px}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin-top:12px}
+.wd{text-align:center;font-size:.8rem;color:var(--muted);padding:2px 0}
+.cell{min-height:86px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:4px 5px;text-align:left;display:flex;flex-direction:column;gap:3px;min-width:0}
+.cell.out{background:transparent;border-color:transparent;color:var(--muted);opacity:.55}
+.cell .num{font-size:.85rem;font-weight:600;line-height:1.2}
+.cell.today .num{background:var(--ink);color:var(--bg);border-radius:999px;display:inline-block;min-width:22px;text-align:center;padding:1px 5px;align-self:flex-start}
+.cell.sel{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.cell .lbl{font-size:.7rem;line-height:1.25;border-radius:4px;padding:1px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:var(--tag);color:var(--tag-ink)}
+.cell .lbl.late{background:var(--late);color:#fff}
+.cell .lbl.done{background:var(--ok-bg);color:var(--ok)}
+.cell .lbl.later{background:var(--field);color:var(--ink);box-shadow:inset 3px 0 0 var(--tag)}
+.cell .more{font-size:.7rem;color:var(--muted)}
+.dots{display:none;gap:3px;flex-wrap:wrap}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--tag)}
+.dot.late{background:var(--late)}.dot.done{background:var(--ok)}.dot.later{background:var(--accent)}
+@media (max-width:560px){.cell{min-height:54px}.cell .lbl,.cell .more{display:none}.dots{display:flex}}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.8rem;color:var(--muted);margin-top:10px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+
+/* bottom nav */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav.tabs .in{max-width:860px;margin:0 auto;display:flex}
+nav.tabs button{flex:1;border:0;background:none;padding:10px 4px 12px;font-size:.9rem;color:var(--muted);font-weight:500}
+nav.tabs button[aria-current="page"]{color:var(--ink);font-weight:700;box-shadow:inset 0 3px 0 var(--tag)}
+nav.tabs .add{color:var(--accent);font-weight:700}
+
+/* sheet */
+.scrim{position:fixed;inset:0;background:rgba(8,16,20,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:640px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:18px 18px calc(22px + env(safe-area-inset-bottom,0px))}
+@media (min-width:700px){.scrim{align-items:center}.sheet{border-radius:18px;max-height:86vh}}
+.sheet h3{margin:0 0 2px;font-size:1.2rem}
+.sheet .sub{color:var(--muted);font-size:.9rem;margin-bottom:14px}
+.sheet-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;font-size:.92rem;margin:10px 0 4px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;margin-top:6px}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:500;background:var(--field)}
+tr:last-child td{border-bottom:0}
+td.missing{color:var(--late)}
+.pmlist .pm{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.pmlist .pm:last-child{border-bottom:0}
+.pm .tag{width:52px;padding:10px 0 4px}
+.pm .tag .d{font-size:1.15rem}
+.pm .info{flex:1;font-size:.9rem}
+.pm .note{color:var(--muted);font-size:.84rem}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+label.f{display:block;font-size:.86rem;color:var(--muted);margin:12px 0 4px}
+.in-f{width:100%;border:1px solid var(--line);background:var(--field);border-radius:10px;padding:10px 12px}
+textarea.in-f{min-height:70px;resize:vertical}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.itemcard{border:1px solid var(--line);border-radius:12px;padding:8px;margin-bottom:8px}
+.itemrow{display:grid;grid-template-columns:1fr 1fr auto;gap:6px;margin-bottom:6px;align-items:center}
+.itemcard .hint{font-size:.8rem;color:var(--muted);margin-top:4px;min-height:1em}
+.itemcard .hint.ai{color:var(--accent)}
+.itemcard .hint.bad{color:var(--late)}
+.itemcard .hint button{border:0;background:none;color:var(--accent);text-decoration:underline;padding:0 0 0 6px;font-size:inherit}
+input[type="date"].in-f{-webkit-appearance:none;appearance:none;display:block;min-width:0;max-width:100%;min-height:46px;text-align:left}
+input[type="date"].in-f::-webkit-date-and-time-value{text-align:left}
+.x{border:1px solid var(--line);background:var(--surface);border-radius:8px;width:36px;height:40px}
+.preview{background:var(--field);border-radius:10px;padding:10px 12px;font-size:.88rem;margin-top:10px}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:.9rem;margin-top:12px}
+.notice{background:var(--late-bg);color:var(--late);border-radius:10px;padding:10px 14px;margin-top:14px;font-size:.9rem}
+.toast{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:10px;z-index:40;font-size:.9rem}
+/* link back to Task Kosin + page transition */
+.back{display:inline-flex;align-items:center;gap:4px;font-size:.86rem;font-weight:600;color:#E0122E;text-decoration:none;padding:2px 10px 2px 8px;margin:0 0 4px -2px;border-radius:999px;background:rgba(224,18,46,.09)}
+.back:active{transform:scale(.95)}
+.sync{display:inline-flex;align-items:center;gap:5px;font-size:.78rem;color:var(--muted);margin-left:8px}
+.sync i{width:7px;height:7px;border-radius:50%;background:var(--muted)}
+.sync[data-s="ok"] i{background:var(--ok)}
+.sync[data-s="saving"] i,.sync[data-s="loading"] i{background:var(--tag);animation:blink 1s infinite}
+.sync[data-s="error"] i,.sync[data-s="local"] i{background:var(--late)}
+@keyframes blink{50%{opacity:.25}}
+@media (prefers-reduced-motion:no-preference){
+  body{animation:pmIn .32s cubic-bezier(.2,.8,.2,1)}
+  @keyframes pmIn{from{transform:translateX(36px);opacity:.2}}
+  body.leaving{transition:transform .2s ease,opacity .2s ease;transform:translateX(36px);opacity:0}
+}
+pre.csv{white-space:pre;overflow:auto;background:var(--field);padding:10px;border-radius:8px;font-size:.78rem;max-height:40vh}
+@media (prefers-reduced-motion:no-preference){.sheet{animation:up .18s ease-out}@keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="top-row">
+      <div>
+        <a class="back" href="./" id="backLink">‹ Task Kosin</a>
+        <h1>ตาราง PM ของก๊อต</h1>
+        <div class="today"><span id="todayLbl"></span><span class="sync" id="sync" data-s="loading"><i></i><b>กำลังเชื่อมต่อ…</b></span></div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
+        <button class="iconbtn" id="importBtn" type="button">นำเข้า CSV</button>
+        <button class="iconbtn" id="exportBtn" type="button">ส่งออก CSV</button>
+      </div>
+    </div>
+    <div class="summary" id="summary"></div>
+  </header>
+  <main id="main"><p class="empty" style="margin-top:20px">กำลังโหลดข้อมูล…</p></main>
+</div>
+<nav class="tabs"><div class="in">
+  <button type="button" data-tab="pm" aria-current="page">งาน PM</button>
+  <button type="button" data-tab="cal">ปฏิทิน</button>
+  <button type="button" data-tab="hosp">โรงพยาบาล</button>
+  <button type="button" class="add" id="addBtn">+ เพิ่มงานติดตั้ง</button>
+</div></nav>
+<div id="modalRoot"></div>
+
+<script>
+(function(){
+const MONTHS=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+const MONTHS_FULL=["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+const LS_KEY="task-kosin-pm-local-v1";
+const state={sample:null,calY:new Date().getFullYear(),calM:new Date().getMonth(),calSel:null,installs:[],mode:"loading",tab:"pm",q:"",filter:"all",showDone:false,db:null,downloads:null};
+
+/* ---------- utils ---------- */
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function parse(iso){if(!iso)return null;const [y,m,d]=iso.split("-").map(Number);return new Date(y,m-1,d)}
+function iso(dt){return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0")}
+function todayD(){const n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate())}
+function addMonths(dt,n){const d=new Date(dt.getFullYear(),dt.getMonth()+n,1);const last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(dt.getDate(),last));return d}
+function days(a,b){return Math.round((b-a)/86400000)}
+function fmt(isoS){const d=parse(isoS);return d?d.getDate()+" "+MONTHS[d.getMonth()]+" "+d.getFullYear():"-"}
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function uid(){return "i"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function expected(ins){return (Number(ins.warrantyYears)||0)*(Number(ins.pmPerYear)||0)}
+function warrantyEnd(ins){const d=parse(ins.installDate);return d?iso(addMonths(d,12*(Number(ins.warrantyYears)||0))):null}
+function genDates(installDate,pmPerYear,years,from=1){
+  const d0=parse(installDate);if(!d0||!pmPerYear)return[];
+  const step=12/pmPerYear,n=pmPerYear*years,out=[];
+  for(let k=from;k<=n;k++)out.push(iso(addMonths(d0,Math.round(step*k))));
+  return out;
+}
+function status(pm){if(pm.done)return"done";const n=days(todayD(),parse(pm.due));if(n<0)return"late";if(n<=30)return"soon";return"later"}
+function whenText(pm){
+  if(pm.done)return"ทำแล้ว "+(pm.doneDate?fmt(pm.doneDate):"");
+  const n=days(todayD(),parse(pm.due));
+  if(n<0)return"เลยกำหนดมา "+(-n)+" วัน";if(n===0)return"ครบกำหนดวันนี้";if(n===1)return"พรุ่งนี้";return"อีก "+n+" วัน";
+}
+function itemSummary(ins){
+  const m=new Map();(ins.items||[]).forEach(it=>{const k=(it.desc||it.code||"ไม่มีชื่อ").trim();m.set(k,(m.get(k)||0)+1)});
+  return [...m].map(([k,c])=>c>1?k+" ×"+c:k).join(", ");
+}
+function flags(ins){
+  const f=[];const items=ins.items||[];
+  const noSN=items.filter(i=>!String(i.sn||"").trim()).length;
+  const noCode=items.filter(i=>!String(i.code||"").trim()).length;
+  if(noSN)f.push({t:"ไม่มี S/N "+noSN+" รายการ",c:""});
+  if(noCode)f.push({t:"ไม่มีรหัสสินค้า "+noCode+" รายการ",c:""});
+  const exp=expected(ins),have=(ins.pms||[]).length;
+  if(exp&&have<exp)f.push({t:"ลงรอบ PM ไว้ "+have+" จาก "+exp+" รอบ",c:"warn"});
+  const late=(ins.pms||[]).filter(p=>status(p)==="late").length;
+  if(late)f.push({t:"เลยกำหนด "+late+" รอบ",c:""});
+  return f;
+}
+function allPMs(){
+  const out=[];
+  state.installs.forEach(ins=>(ins.pms||[]).forEach((pm,i)=>out.push({ins,pm,i,st:status(pm)})));
+  return out.sort((a,b)=>a.pm.due<b.pm.due?-1:a.pm.due>b.pm.due?1:0);
+}
+function toast(msg){const t=document.createElement("div");t.className="toast";t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2200)}
+
+/* ---------- storage: Google Sheet (tab "PM") via the Task Kosin API ----------
+   Uses the same API link + token saved by Task Kosin on this device. */
+const CONN_KEY="task-kosin-conn", CACHE_KEY="task-kosin-pm-cache";
+let conn=null;try{const c=JSON.parse(localStorage.getItem(CONN_KEY)||"null");if(c&&c.url&&c.token)conn=c}catch(e){}
+const SYNC_TXT={ok:"บันทึกลงชีตแล้ว",saving:"กำลังบันทึก…",loading:"กำลังเชื่อมต่อ…",local:"โหมดทดลอง",error:"เชื่อมต่อไม่ได้"};
+function setSync(s){const el=document.getElementById("sync");el.dataset.s=s;el.querySelector("b").textContent=SYNC_TXT[s]}
+async function api(action,payload){
+  const res=await fetch(conn.url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(Object.assign({token:conn.token,action},payload||{})),redirect:"follow"});
+  if(!res.ok)throw new Error("เซิร์ฟเวอร์ตอบกลับ "+res.status);
+  const j=await res.json();if(!j.ok)throw new Error(j.error==="unauthorized"?"รหัส API ไม่ถูกต้อง":j.error);
+  return j.data;
+}
+const chains={};let pending=0;
+function queue(id,fn){
+  pending++;setSync("saving");
+  const p=(chains[id]||Promise.resolve()).then(fn).catch(e=>{toast("บันทึกไม่สำเร็จ: "+((e&&e.message)||"ลองใหม่อีกครั้ง"));setSync("error")})
+    .finally(()=>{pending--;if(!pending&&document.getElementById("sync").dataset.s!=="error")setSync("ok")});
+  chains[id]=p;return p;
+}
+function persist(ins){
+  const data=clone(ins);data.updatedAt=new Date().toISOString();
+  const i=state.installs.findIndex(x=>x.id===ins.id);if(i>=0)state.installs[i]=clone(data);else state.installs.push(clone(data));
+  render();
+  if(conn&&state.mode!=="local"){cacheNow();return queue(ins.id,()=>api("pmSave",{install:data}))}
+  saveLocal();return Promise.resolve();
+}
+function removeInstall(id){
+  state.installs=state.installs.filter(x=>x.id!==id);
+  if(conn&&state.mode!=="local"){cacheNow();queue(id,()=>api("pmDelete",{id}))}
+  else saveLocal();
+  render();
+}
+function cacheNow(){try{localStorage.setItem(CACHE_KEY,JSON.stringify(state.installs))}catch(e){}}
+function saveLocal(){try{localStorage.setItem(LS_KEY,JSON.stringify(state.installs))}catch(e){}}
+function loadLocal(){try{const s=localStorage.getItem(LS_KEY);return s?JSON.parse(s):null}catch(e){return null}}
+/* example installs for the trial mode (same shape as the real data) */
+function sampleInstalls(){
+  const t=todayD(),back=n=>iso(new Date(t.getFullYear(),t.getMonth(),t.getDate()-n));
+  const mk=(hospital,dept,ago,years,per,items,doneN,note)=>{const installDate=back(ago);const pms=genDates(installDate,per,years).map((d,k)=>k<doneN?{due:d,done:true,doneDate:d}:{due:d,done:false});return{id:uid(),hospital,dept,installDate,warrantyYears:years,pmPerYear:per,items,pms,note:note||""}};
+  return [
+    mk("รพ.อำนาจเจริญ","OR",170,2,2,[{code:"",desc:"IMAGE1 S Camera Control Unit",sn:"[S/N]"},{code:"",desc:"Power LED 300 Light Source",sn:""}],0,"ข้อมูลตัวอย่าง"),
+    mk("รพ.ยโสธร","URO",195,2,2,[{code:"",desc:"Flexible Video Uretero-Renoscope",sn:"[S/N]"}],0,"ข้อมูลตัวอย่าง"),
+    mk("รพ.มุกดาหาร","ANES",345,2,2,[{code:"",desc:"C-MAC Video Laryngoscope",sn:"[S/N]"}],1,"ข้อมูลตัวอย่าง"),
+    mk("รพ.ศรีสะเกษ","ENT",60,1,4,[{code:"",desc:"IMAGE1 S Camera Head",sn:"[S/N]"},{code:"",desc:"HOPKINS Telescope 30°",sn:"[S/N]"}],0,"ข้อมูลตัวอย่าง"),
+    mk("รพ.อำนาจเจริญ","GI",300,1,3,[{code:"",desc:"ENDOFLATOR 40",sn:"[S/N]"}],2,"ข้อมูลตัวอย่าง")
+  ];
+}
+
+/* ---------- render ---------- */
+const main=document.getElementById("main");
+function render(){
+  const t=todayD();
+  document.getElementById("todayLbl").textContent="วันนี้ "+t.getDate()+" "+MONTHS_FULL[t.getMonth()]+" "+t.getFullYear();
+  const pms=allPMs();
+  const late=pms.filter(x=>x.st==="late").length,soon=pms.filter(x=>x.st==="soon").length;
+  const hospitals=new Set(state.installs.map(i=>i.hospital)).size;
+  document.getElementById("summary").innerHTML=
+    `<span class="pill ${late?"late":""}">เลยกำหนด <b>${late}</b></span>`+
+    `<span class="pill ${soon?"soon":""}">ภายใน 30 วัน <b>${soon}</b></span>`+
+    `<span class="pill">${hospitals} โรงพยาบาล, ${state.installs.reduce((a,i)=>a+(i.items||[]).length,0)} เครื่อง</span>`;
+  document.querySelectorAll("nav.tabs [data-tab]").forEach(b=>b.setAttribute("aria-current",b.dataset.tab===state.tab?"page":"false"));
+  let html="";
+  if(state.mode==="local")html+=`<div class="notice">โหมดทดลอง · ข้อมูลตัวอย่างเก็บในเครื่องนี้เท่านั้น เชื่อมต่อ Google Sheet ได้ที่ Task Kosin › ประวัติ › การเชื่อมต่อ</div>`;
+  if(state.mode==="error")html+=`<div class="notice">โหลดข้อมูล PM จากชีตไม่ได้: ${esc(state.err||"")} · แสดงข้อมูลชุดล่าสุดที่เก็บไว้ในเครื่อง</div>`;
+  html+=state.tab==="pm"?renderPM(pms):state.tab==="cal"?renderCal(pms):renderHosp();
+  main.innerHTML=html;
+}
+function pmRow(x){
+  const {ins,pm,i,st}=x;const d=parse(pm.due);
+  const total=Math.max((ins.pms||[]).length,expected(ins));
+  return `<div class="row">
+    <div class="tag ${st==="soon"?"":st}"><span class="d">${d.getDate()}</span><span class="m">${MONTHS[d.getMonth()]}</span><span class="y">${d.getFullYear()}</span></div>
+    <div class="body" data-open="${esc(ins.id)}">
+      <div class="hosp">${esc(ins.hospital)}${ins.dept?`<span class="dept">${esc(ins.dept)}</span>`:""}</div>
+      <div class="items">PM ครั้งที่ ${i+1} จาก ${total} · ${esc(itemSummary(ins))}</div>
+      <div class="when ${st}">${esc(whenText(pm))}</div>
+    </div>
+    ${pm.done?`<button class="btn small" type="button" data-done="${esc(ins.id)}|${i}">แก้ไข</button>`:`<button class="btn small primary" type="button" data-done="${esc(ins.id)}|${i}">ทำแล้ว</button>`}
+  </div>`;
+}
+function renderPM(pms){
+  if(!state.installs.length)return emptyState();
+  const late=pms.filter(x=>x.st==="late"),soon=pms.filter(x=>x.st==="soon"),later=pms.filter(x=>x.st==="later");
+  let h="";
+  if(late.length)h+=`<h2>เลยกำหนด <small>${late.length} งาน</small></h2>`+late.map(pmRow).join("");
+  h+=`<h2>ภายใน 30 วัน <small>${soon.length?soon.length+" งาน":"ไม่มีงาน"}</small></h2>`+(soon.length?soon.map(pmRow).join(""):`<div class="empty">ช่วง 30 วันนี้ยังไม่มี PM ที่ต้องเข้าทำ</div>`);
+  if(later.length){
+    h+=`<h2>ถัดไป</h2>`;let cur="";
+    later.forEach(x=>{const d=parse(x.pm.due);const k=MONTHS_FULL[d.getMonth()]+" "+d.getFullYear();if(k!==cur){cur=k;h+=`<div class="month">${k}</div>`}h+=pmRow(x)});
+  }
+  const done=pms.filter(x=>x.st==="done").reverse();
+  h+=`<label class="toggle-line"><input type="checkbox" id="showDone" ${state.showDone?"checked":""}> แสดง PM ที่ทำแล้ว (${done.length})</label>`;
+  if(state.showDone)h+=done.map(pmRow).join("");
+  return h;
+}
+function shortName(h){return String(h||"").replace(/^รพ\.?\s*/,"").replace(/^สมเด็จพระยุพราช/,"")}
+function renderCal(pms){
+  const y=state.calY,m=state.calM,first=new Date(y,m,1),start=new Date(y,m,1-first.getDay());
+  const byDay=new Map();pms.forEach(x=>{if(!byDay.has(x.pm.due))byDay.set(x.pm.due,[]);byDay.get(x.pm.due).push(x)});
+  const tIso=iso(todayD());
+  let h=`<div class="calhead"><div class="mname">${MONTHS_FULL[m]} ${y}</div><div class="calnav">
+    <button class="btn small" type="button" data-cal="-1" aria-label="เดือนก่อนหน้า">‹</button>
+    <button class="btn small" type="button" data-cal="0">เดือนนี้</button>
+    <button class="btn small" type="button" data-cal="1" aria-label="เดือนถัดไป">›</button></div></div>
+  <div class="cal">${["อา","จ","อ","พ","พฤ","ศ","ส"].map(d=>`<div class="wd">${d}</div>`).join("")}`;
+  for(let k=0;k<42;k++){
+    const d=new Date(start.getFullYear(),start.getMonth(),start.getDate()+k),di=iso(d),list=byDay.get(di)||[];
+    if(k===35&&d.getMonth()!==m)break;
+    const cls=["cell",d.getMonth()!==m?"out":"",di===tIso?"today":"",state.calSel===di?"sel":""].join(" ");
+    const lbl=list.slice(0,3).map(x=>`<div class="lbl ${x.st==="soon"?"":x.st}">${esc(shortName(x.ins.hospital))}</div>`).join("");
+    h+=`<button type="button" class="${cls}" data-day="${di}" aria-label="${d.getDate()} ${MONTHS_FULL[d.getMonth()]}${list.length?" มี PM "+list.length+" งาน":""}"><span class="num">${d.getDate()}</span>${lbl}${list.length>3?`<span class="more">+${list.length-3} งาน</span>`:""}<span class="dots">${list.map(x=>`<span class="dot ${x.st==="soon"?"":x.st}"></span>`).join("")}</span></button>`;
+  }
+  h+=`</div><div class="legend"><span><i class="dot late"></i>เลยกำหนด</span><span><i class="dot"></i>ภายใน 30 วัน</span><span><i class="dot later"></i>ถัดไป</span><span><i class="dot done"></i>ทำแล้ว</span></div>`;
+  if(state.calSel){
+    const list=byDay.get(state.calSel)||[];
+    h+=`<h2>${fmt(state.calSel)} <small>${list.length?list.length+" งาน":"ไม่มีงาน PM"}</small></h2>`+list.map(pmRow).join("")+`<button class="btn small" type="button" data-cal="all">ดูทั้งเดือน</button>`;
+  }else{
+    const pre=y+"-"+String(m+1).padStart(2,"0");const list=pms.filter(x=>x.pm.due.startsWith(pre));
+    h+=`<h2>PM ทั้งเดือน <small>${list.length?list.length+" งาน":"ไม่มีงาน PM ในเดือนนี้"}</small></h2>`+list.map(pmRow).join("");
+  }
+  return h;
+}
+function emptyState(){return `<div class="empty" style="margin-top:22px">ยังไม่มีข้อมูลงานติดตั้ง<br><br><button class="btn primary" type="button" data-new>เพิ่มงานติดตั้งแรก</button></div>`}
+function renderHosp(){
+  if(!state.installs.length)return emptyState();
+  const q=state.q.trim().toLowerCase();
+  let list=state.installs.filter(ins=>{
+    if(q){const hay=[ins.hospital,ins.dept,...(ins.items||[]).flatMap(i=>[i.code,i.desc,i.sn])].join(" ").toLowerCase();if(!hay.includes(q))return false}
+    const we=warrantyEnd(ins),inW=we&&parse(we)>=todayD();
+    if(state.filter==="issue")return flags(ins).length>0;
+    if(state.filter==="inw")return inW;
+    if(state.filter==="outw")return !inW;
+    return true;
+  });
+  const groups=new Map();
+  list.sort((a,b)=>a.hospital.localeCompare(b.hospital,"th")||(a.installDate<b.installDate?-1:1)).forEach(i=>{if(!groups.has(i.hospital))groups.set(i.hospital,[]);groups.get(i.hospital).push(i)});
+  const chip=(k,l)=>`<button class="chip" type="button" data-filter="${k}" aria-pressed="${state.filter===k}">${l}</button>`;
+  let h=`<input class="search" id="search" type="search" placeholder="ค้นหาโรงพยาบาล รุ่นเครื่อง หรือ S/N" value="${esc(state.q)}">
+  <div class="chips">${chip("all","ทั้งหมด")}${chip("issue","ต้องตรวจสอบ")}${chip("inw","อยู่ในประกัน")}${chip("outw","หมดประกันแล้ว")}</div>`;
+  if(!groups.size)h+=`<div class="empty" style="margin-top:12px">ไม่พบรายการที่ตรงกับการค้นหา</div>`;
+  groups.forEach((arr,name)=>{
+    h+=`<div class="hcard"><div class="hname">${esc(name)}</div>`;
+    arr.forEach(ins=>{
+      const next=(ins.pms||[]).filter(p=>!p.done).sort((a,b)=>a.due<b.due?-1:1)[0];
+      const f=flags(ins);
+      h+=`<button class="inst" type="button" data-open="${esc(ins.id)}">
+        <div class="l1"><span>${ins.dept?esc(ins.dept)+" · ":""}ติดตั้ง ${fmt(ins.installDate)}</span><span>${next?"PM ถัดไป "+fmt(next.due):"ครบทุกรอบแล้ว"}</span></div>
+        <div class="l2">${esc(itemSummary(ins))}</div>
+        ${f.length?`<div class="flags">${f.map(x=>`<span class="flag ${x.c}">${esc(x.t)}</span>`).join("")}</div>`:""}
+      </button>`;
+    });
+    h+=`</div>`;
+  });
+  return h;
+}
+
+/* ---------- modals ---------- */
+const root=document.getElementById("modalRoot");
+function openModal(html){root.innerHTML=`<div class="scrim" data-scrim><div class="sheet" role="dialog" aria-modal="true">${html}</div></div>`;const f=root.querySelector("input,select,textarea,button");}
+function closeModal(){root.innerHTML=""}
+root.addEventListener("click",e=>{if(e.target.matches("[data-scrim]"))closeModal()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+
+function openDetail(id){
+  const ins=state.installs.find(x=>x.id===id);if(!ins)return;
+  const exp=expected(ins),have=(ins.pms||[]).length,f=flags(ins);
+  const items=(ins.items||[]).map(it=>`<tr><td class="${it.code?"":"missing"}">${esc(it.code||"ไม่มี")}</td><td>${esc(it.desc||"-")}</td><td class="${it.sn?"":"missing"}">${esc(it.sn||"ยังไม่มี S/N")}</td></tr>`).join("");
+  const pms=(ins.pms||[]).map((pm,i)=>{const st=status(pm),d=parse(pm.due);return `<div class="pm">
+    <div class="tag ${st==="soon"?"":st}"><span class="d">${d.getDate()}</span><span class="m">${MONTHS[d.getMonth()]}</span><span class="y">${d.getFullYear()}</span></div>
+    <div class="info">ครั้งที่ ${i+1}<div class="when ${st}">${esc(whenText(pm))}</div>${pm.note?`<div class="note">${esc(pm.note)}</div>`:""}</div>
+    <button class="btn small ${pm.done?"":"primary"}" type="button" data-done="${esc(ins.id)}|${i}">${pm.done?"แก้ไข":"ทำแล้ว"}</button></div>`}).join("");
+  openModal(`<div class="sheet-head"><div><h3>${esc(ins.hospital)}</h3><div class="sub">${ins.dept?esc(ins.dept)+" · ":""}${(ins.items||[]).length} เครื่อง</div></div><button class="btn small" type="button" data-close>ปิด</button></div>
+    ${f.length?`<div class="flags">${f.map(x=>`<span class="flag ${x.c}">${esc(x.t)}</span>`).join("")}</div>`:""}
+    <dl class="kv"><dt>วันติดตั้ง</dt><dd>${fmt(ins.installDate)}</dd><dt>รับประกัน</dt><dd>${ins.warrantyYears} ปี ถึง ${fmt(warrantyEnd(ins))}</dd><dt>รอบ PM</dt><dd>${ins.pmPerYear} ครั้งต่อปี</dd>${ins.note?`<dt>หมายเหตุ</dt><dd>${esc(ins.note)}</dd>`:""}</dl>
+    <h2 style="margin-top:16px">รายการเครื่อง</h2>
+    <div class="tbl"><table><thead><tr><th>รหัสสินค้า</th><th>รายละเอียด</th><th>S/N</th></tr></thead><tbody>${items||`<tr><td colspan="3">ยังไม่มีรายการเครื่อง</td></tr>`}</tbody></table></div>
+    <h2>ตาราง PM <small>${have} รอบ${exp?" จากที่ควรมี "+exp+" รอบ":""}</small></h2>
+    <div class="pmlist">${pms||`<div class="empty">ยังไม่มีกำหนด PM</div>`}</div>
+    <div class="actions">
+      <button class="btn primary" type="button" data-edit="${esc(ins.id)}">แก้ไขข้อมูล</button>
+      ${exp&&have<exp?`<button class="btn" type="button" data-fill="${esc(ins.id)}">เติมรอบ PM ที่ขาด (${exp-have} รอบ)</button>`:""}
+      <button class="btn danger" type="button" data-del="${esc(ins.id)}">ลบงานนี้</button>
+    </div>`);
+}
+function openDone(id,i){
+  const ins=state.installs.find(x=>x.id===id);if(!ins)return;const pm=ins.pms[i];
+  openModal(`<h3>${pm.done?"แก้ไขบันทึก PM":"บันทึกว่าทำ PM แล้ว"}</h3>
+    <div class="sub">${esc(ins.hospital)} · PM ครั้งที่ ${i+1} กำหนด ${fmt(pm.due)}</div>
+    <label class="f" for="dDate">วันที่เข้าทำจริง</label><input class="in-f" type="date" id="dDate" value="${esc(pm.doneDate||iso(todayD()))}">
+    <label class="f" for="dNote">หมายเหตุ</label><textarea class="in-f" id="dNote" placeholder="เช่น เปลี่ยนหลอดไฟ, ลูกค้าเซ็นรับแล้ว">${esc(pm.note||"")}</textarea>
+    <label class="f" for="dDue">วันกำหนด (แก้ได้ถ้าเลื่อนนัด)</label><input class="in-f" type="date" id="dDue" value="${esc(pm.due)}">
+    <div class="actions">
+      <button class="btn primary" type="button" id="dSave">บันทึกว่าทำแล้ว</button>
+      <button class="btn" type="button" id="dDueOnly">บันทึกเฉพาะวันกำหนด</button>
+      ${pm.done?`<button class="btn danger" type="button" id="dUndo">ยกเลิกสถานะทำแล้ว</button>`:""}
+      <button class="btn" type="button" data-close>ยกเลิก</button>
+    </div>`);
+  const save=(done)=>{const c=clone(ins);const p=c.pms[i];const due=document.getElementById("dDue").value;if(due)p.due=due;
+    p.note=document.getElementById("dNote").value.trim();
+    if(done===true){p.done=true;p.doneDate=document.getElementById("dDate").value||iso(todayD())}
+    if(done===false){p.done=false;delete p.doneDate}
+    c.pms.sort((a,b)=>a.due<b.due?-1:1);persist(c);closeModal();toast(done===true?"บันทึกว่าทำแล้ว":done===false?"ยกเลิกสถานะทำแล้ว":"บันทึกวันกำหนดแล้ว")};
+  document.getElementById("dSave").onclick=()=>save(true);
+  document.getElementById("dDueOnly").onclick=()=>save(null);
+  const u=document.getElementById("dUndo");if(u)u.onclick=()=>save(false);
+}
+function itemRowHTML(it){return `<div class="itemcard"><div class="itemrow"><input class="in-f" placeholder="รหัสสินค้า" value="${esc(it.code||"")}" data-k="code" autocapitalize="characters" autocomplete="off" spellcheck="false"><input class="in-f" placeholder="S/N" value="${esc(it.sn||"")}" data-k="sn" autocapitalize="characters" autocomplete="off" spellcheck="false"><button class="x" type="button" data-rmitem aria-label="ลบเครื่องนี้">×</button></div><input class="in-f desc" placeholder="ชื่อเครื่อง (เด้งมาเองเมื่อกรอกรหัส)" value="${esc(it.desc||"")}" data-k="desc"><div class="hint" aria-live="polite"></div></div>`}
+function normCode(c){return String(c||"").trim().toUpperCase().replace(/\s+/g,"")}
+function catalog(){const m=new Map();[...state.installs].sort((a,b)=>(a.updatedAt||"")<(b.updatedAt||"")?-1:1).forEach(ins=>(ins.items||[]).forEach(it=>{const c=normCode(it.code);if(c&&it.desc)m.set(c,it.desc)}));return m}
+async function lookupCard(card,fromAI){
+  const codeEl=card.querySelector('[data-k="code"]'),desc=card.querySelector('[data-k="desc"]'),hint=card.querySelector(".hint");
+  const code=normCode(codeEl.value);hint.className="hint";
+  if(card._ctl){card._ctl.abort();card._ctl=null}
+  if(!code){hint.textContent="";return}
+  const canFill=!desc.value.trim()||desc.dataset.auto==="1";
+  const local=catalog().get(code);
+  if(local){if(canFill){desc.value=local;desc.dataset.auto="1"}hint.textContent="ชื่อจากข้อมูลที่เคยบันทึกไว้";return}
+  if(!fromAI){hint.textContent="";return}
+  if(!canFill)return;
+  if(!state.sample){hint.textContent="ไม่พบรหัสนี้ในข้อมูลเดิม กรอกชื่อเองได้เลย";return}
+  const ctl=new AbortController();card._ctl=ctl;
+  hint.className="hint ai";hint.textContent="กำลังค้นหาชื่อจากแคตตาล็อก KARL STORZ…";
+  const prompt=`Identify a KARL STORZ medical device from its article (catalog) number.
+Article number: "${code}"
+Reply with only a JSON object: {"found": true or false, "name": "the product name as KARL STORZ lists it, in English, short", "confidence": "high" or "medium" or "low"}
+Rules: set found to false if you do not actually recognize this specific article number. Do not invent a name from the number pattern alone. If it is not a KARL STORZ article number, set found to false.`;
+  try{
+    const r=await state.sample.json(prompt,{signal:ctl.signal});
+    if(normCode(codeEl.value)!==code)return;
+    card._ctl=null;
+    const name=r&&typeof r.name==="string"?r.name.trim():"";
+    if(r&&r.found&&name&&r.confidence!=="low"){
+      if(!desc.value.trim()||desc.dataset.auto==="1"){desc.value=name;desc.dataset.auto="1"}
+      hint.className="hint ai";hint.textContent="AI แนะนำชื่อนี้ ตรวจสอบกับเอกสารส่งของก่อนบันทึก";
+    }else if(r&&r.found&&name){
+      hint.className="hint bad";hint.innerHTML=`AI ไม่แน่ใจ อาจเป็น "${esc(name)}"<button type="button" data-use>ใช้ชื่อนี้</button>`;
+      hint.querySelector("[data-use]").onclick=()=>{desc.value=name;desc.dataset.auto="1";hint.className="hint ai";hint.textContent="ใช้ชื่อที่ AI แนะนำ ตรวจสอบก่อนบันทึก"};
+    }else{hint.className="hint bad";hint.textContent="ไม่พบรหัสนี้ในแคตตาล็อก กรอกชื่อเองได้เลย"}
+  }catch(e){
+    if(e&&e.code==="cancelled")return;
+    card._ctl=null;hint.className="hint bad";
+    hint.textContent=e&&e.code==="not_granted"?"ไม่ได้อนุญาตให้ AI ค้นหา กรอกชื่อเองได้เลย":e&&e.code==="rate_limited"?"ค้นหาถี่เกินไป รอสักครู่แล้วแก้รหัสใหม่":"ค้นหาไม่สำเร็จ กรอกชื่อเองได้เลย";
+  }
+}
+function openForm(id){
+  const ins=id?state.installs.find(x=>x.id===id):null;
+  const v=ins?clone(ins):{hospital:"",dept:"",installDate:iso(todayD()),warrantyYears:1,pmPerYear:2,items:[{code:"",desc:"",sn:""}],pms:[],note:""};
+  const hosps=[...new Set(state.installs.map(i=>i.hospital))];
+  const opt=(arr,val)=>arr.map(n=>`<option value="${n}" ${Number(val)===n?"selected":""}>${n}</option>`).join("");
+  openModal(`<h3>${ins?"แก้ไขงานติดตั้ง":"เพิ่มงานติดตั้ง"}</h3><div class="sub">ใส่วันติดตั้ง ระยะประกัน และจำนวนรอบ PM ระบบจะสร้างตาราง PM ให้เอง</div>
+    <label class="f" for="fH">โรงพยาบาล</label><input class="in-f" id="fH" list="hlist" value="${esc(v.hospital)}" placeholder="เช่น รพ.อำนาจเจริญ"><datalist id="hlist">${hosps.map(h=>`<option value="${esc(h)}">`).join("")}</datalist>
+    <label class="f" for="fD">แผนก (ถ้ามี)</label><input class="in-f" id="fD" value="${esc(v.dept||"")}" placeholder="เช่น ANES, URO">
+    <label class="f" for="fI">วันติดตั้ง</label><input class="in-f" type="date" id="fI" value="${esc(v.installDate)}">
+    <div class="grid2"><div><label class="f" for="fW">ระยะรับประกัน (ปี)</label><select class="in-f" id="fW">${opt([1,2,3,4,5],v.warrantyYears)}</select></div>
+    <div><label class="f" for="fP">รอบ PM ต่อปี</label><select class="in-f" id="fP">${opt([1,2,3,4,6,12],v.pmPerYear)}</select></div></div>
+    <label class="f">รายการเครื่อง</label><div id="items">${(v.items.length?v.items:[{}]).map(itemRowHTML).join("")}</div>
+    <button class="btn small" type="button" id="addItem">+ เพิ่มเครื่อง</button>
+    <label class="f" for="fN">หมายเหตุ</label><textarea class="in-f" id="fN">${esc(v.note||"")}</textarea>
+    ${ins?`<label class="check"><input type="checkbox" id="fRegen"> สร้างตาราง PM ใหม่จากวันติดตั้ง (รอบที่ทำแล้วจะเก็บไว้เหมือนเดิม)</label>`:""}
+    <div class="preview" id="prev"></div>
+    <div class="actions"><button class="btn primary" type="button" id="fSave">${ins?"บันทึกการแก้ไข":"เพิ่มงานติดตั้ง"}</button><button class="btn" type="button" data-close>ยกเลิก</button></div>`);
+  const $=s=>document.getElementById(s);
+  const prev=()=>{const regen=!ins||($("fRegen")&&$("fRegen").checked);
+    if(!regen){$("prev").textContent="ตาราง PM เดิมจะไม่เปลี่ยน";return}
+    const ds=genDates($("fI").value,Number($("fP").value),Number($("fW").value));
+    $("prev").innerHTML=ds.length?`<b>ตาราง PM ${ds.length} รอบ:</b> ${ds.map(fmt).join(", ")}`:"ใส่วันติดตั้งเพื่อดูตาราง PM"};
+  ["fI","fW","fP"].forEach(k=>$(k).addEventListener("input",prev));if($("fRegen"))$("fRegen").addEventListener("change",prev);prev();
+  $("addItem").onclick=()=>{$("items").insertAdjacentHTML("beforeend",itemRowHTML({}));$("items").lastElementChild.querySelector("input").focus()};
+  $("items").addEventListener("click",e=>{if(e.target.matches("[data-rmitem]")){const c=e.target.closest(".itemcard");if(c._ctl)c._ctl.abort();c.remove()}});
+  $("items").addEventListener("input",e=>{const k=e.target.dataset.k;if(k==="desc")delete e.target.dataset.auto;if(k==="code")lookupCard(e.target.closest(".itemcard"),false)});
+  $("items").addEventListener("change",e=>{if(e.target.dataset.k==="code")lookupCard(e.target.closest(".itemcard"),true)});
+  $("fSave").onclick=()=>{
+    const hospital=$("fH").value.trim();if(!hospital){$("fH").focus();toast("ใส่ชื่อโรงพยาบาลก่อนบันทึก");return}
+    if(!$("fI").value){$("fI").focus();toast("ใส่วันติดตั้งก่อนบันทึก");return}
+    const items=[...$("items").querySelectorAll(".itemcard")].map(r=>{const o={};r.querySelectorAll("[data-k]").forEach(i=>o[i.dataset.k]=i.value.trim());o.code=normCode(o.code);return o}).filter(o=>o.code||o.desc||o.sn);
+    const out=Object.assign(v,{hospital,dept:$("fD").value.trim(),installDate:$("fI").value,warrantyYears:Number($("fW").value),pmPerYear:Number($("fP").value),items,note:$("fN").value.trim()});
+    if(!ins){out.id=uid();out.pms=genDates(out.installDate,out.pmPerYear,out.warrantyYears).map(d=>({due:d,done:false}))}
+    else if($("fRegen").checked){const done=(out.pms||[]).filter(p=>p.done);const gen=genDates(out.installDate,out.pmPerYear,out.warrantyYears).slice(done.length).map(d=>({due:d,done:false}));out.pms=[...done,...gen]}
+    persist(out);closeModal();toast(ins?"บันทึกการแก้ไขแล้ว":"เพิ่มงานติดตั้งแล้ว");
+  };
+}
+function fillMissing(id){
+  const ins=clone(state.installs.find(x=>x.id===id));const have=ins.pms.length;
+  const add=genDates(ins.installDate,ins.pmPerYear,ins.warrantyYears,have+1).map(d=>({due:d,done:false}));
+  ins.pms=[...ins.pms,...add].sort((a,b)=>a.due<b.due?-1:1);persist(ins);openDetail(id);toast("เติม PM เพิ่ม "+add.length+" รอบ");
+}
+function confirmDelete(id){
+  const ins=state.installs.find(x=>x.id===id);
+  openModal(`<h3>ลบงานติดตั้งนี้?</h3><div class="sub">${esc(ins.hospital)} ติดตั้ง ${fmt(ins.installDate)} พร้อมเครื่อง ${(ins.items||[]).length} รายการและตาราง PM ทั้งหมดจะถูกลบ</div>
+  <div class="actions"><button class="btn danger" type="button" id="yDel">ลบงานนี้</button><button class="btn" type="button" data-close>ยกเลิก</button></div>`);
+  document.getElementById("yDel").onclick=()=>{removeInstall(id);closeModal();toast("ลบงานแล้ว")};
+}
+
+/* ---------- export ---------- */
+function csv(){
+  const maxPM=Math.max(0,...state.installs.map(i=>(i.pms||[]).length));
+  const head=["โรงพยาบาล","แผนก","รหัสสินค้า","description","serial number","วันที่ติดตั้ง","รับประกัน(ปี)","รอบ PM ต่อปี"];
+  for(let k=1;k<=maxPM;k++)head.push("PM ครั้งที่ "+k);
+  const q=s=>{s=String(s==null?"":s);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s};
+  const dmy=isoS=>{const d=parse(isoS);return d?d.getDate()+"/"+(d.getMonth()+1)+"/"+d.getFullYear():""};
+  const rows=[head];
+  [...state.installs].sort((a,b)=>a.installDate<b.installDate?-1:1).forEach(ins=>{
+    const its=(ins.items||[]).length?ins.items:[{}];
+    its.forEach((it,j)=>{const r=[j?"":ins.hospital,j?"":ins.dept||"",it.code||"",it.desc||"",it.sn||"",j?"":dmy(ins.installDate),j?"":ins.warrantyYears,j?"":ins.pmPerYear];
+      for(let k=0;k<maxPM;k++){const p=(ins.pms||[])[k];r.push(j||!p?"":dmy(p.due)+(p.done?" (ทำแล้ว)":""))}rows.push(r)});
+    rows.push([]);
+  });
+  return "\uFEFF"+rows.map(r=>r.map(q).join(",")).join("\n");
+}
+async function doExport(){
+  const text=csv();
+  if(/github\.io$/.test(location.hostname)){
+    const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:"text/csv;charset=utf-8"}));
+    a.download="ตาราง-PM-"+iso(todayD())+".csv";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);return;
+  }
+  openModal(`<h3>ข้อมูล CSV</h3><div class="sub">คัดลอกข้อความนี้ไปวางใน Google Sheets ได้เลย</div><pre class="csv">${esc(text.replace("\uFEFF",""))}</pre>
+  <div class="actions"><button class="btn primary" type="button" id="cp">คัดลอก</button><button class="btn" type="button" data-close>ปิด</button></div>`);
+  document.getElementById("cp").onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(text.replace("\uFEFF","")).then(()=>toast("คัดลอกแล้ว"),()=>toast("คัดลอกไม่สำเร็จ ให้เลือกข้อความเอง"))};
+}
+
+/* ---------- import (CSV exported from the old PM app, or the same columns from a sheet) ---------- */
+function parseCSV(text){
+  const rows=[];let row=[],f="",q=false;
+  text=text.replace(/^﻿/,"");
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){if(c==='"'){if(text[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c==='"')q=true;
+    else if(c===","){row.push(f);f=""}
+    else if(c==="\n"||c==="\r"){if(c==="\r"&&text[i+1]==="\n")i++;row.push(f);rows.push(row);row=[];f=""}
+    else f+=c;
+  }
+  if(f!==""||row.length){row.push(f);rows.push(row)}
+  return rows;
+}
+function dmyToIso(s){
+  const m=String(s||"").match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);if(!m)return null;
+  let y=+m[3];if(y>2400)y-=543;
+  const d=new Date(y,+m[2]-1,+m[1]);return isNaN(d)?null:iso(d);
+}
+function installsFromCSV(text){
+  const rows=parseCSV(text).map(r=>r.map(c=>String(c||"").trim()));
+  const hi=rows.findIndex(r=>r.some(c=>c==="โรงพยาบาล"));
+  if(hi<0)throw new Error("ไม่พบหัวตาราง (ต้องมีคอลัมน์ โรงพยาบาล)");
+  const H=rows[hi],col=n=>H.findIndex(c=>c.replace(/\s/g,"").toLowerCase()===n.replace(/\s/g,"").toLowerCase());
+  const C={h:col("โรงพยาบาล"),d:col("แผนก"),code:col("รหัสสินค้า"),desc:col("description"),sn:col("serial number"),inst:col("วันที่ติดตั้ง"),w:col("รับประกัน(ปี)"),p:col("รอบ PM ต่อปี")};
+  const pmCols=H.map((c,i)=>/^PM ครั้งที่\s*\d+/.test(c)?i:-1).filter(i=>i>=0);
+  const out=[];let cur=null;
+  rows.slice(hi+1).forEach(r=>{
+    const g=i=>i>=0?(r[i]||""):"";
+    if(!r.some(c=>c)){cur=null;return}
+    if(g(C.h)){
+      const installDate=dmyToIso(g(C.inst));
+      if(!installDate){cur=null;return}
+      cur={id:uid(),hospital:g(C.h),dept:g(C.d),installDate,warrantyYears:Number(g(C.w))||1,pmPerYear:Number(g(C.p))||2,items:[],pms:[],note:""};
+      pmCols.forEach(i=>{const v=g(i);const due=dmyToIso(v);if(due){const p={due,done:/ทำแล้ว/.test(v)};if(p.done)p.doneDate=due;cur.pms.push(p)}});
+      cur.pms.sort((a,b)=>a.due<b.due?-1:1);
+      out.push(cur);
+    }
+    if(cur&&(g(C.code)||g(C.desc)||g(C.sn)))cur.items.push({code:normCode(g(C.code)),desc:g(C.desc),sn:g(C.sn)});
+  });
+  return out;
+}
+function openImport(){
+  openModal(`<h3>นำเข้าข้อมูล PM</h3>
+    <div class="sub">ใช้ไฟล์ CSV จากปุ่ม "ส่งออก CSV" ของแอป ตาราง PM เดิม เลือกไฟล์ หรือคัดลอกข้อความ CSV มาวางก็ได้</div>
+    <label class="f" for="impFile">เลือกไฟล์ CSV</label><input class="in-f" type="file" id="impFile" accept=".csv,text/csv,text/plain">
+    <label class="f" for="impText">หรือวางข้อความ CSV</label><textarea class="in-f" id="impText" style="min-height:120px" placeholder="โรงพยาบาล,แผนก,รหัสสินค้า,description,serial number,วันที่ติดตั้ง,..."></textarea>
+    <div class="preview" id="impPrev">ยังไม่มีข้อมูล</div>
+    <div class="actions"><button class="btn primary" type="button" id="impGo" disabled>นำเข้า</button><button class="btn" type="button" data-close>ยกเลิก</button></div>`);
+  let parsed=[];
+  const prev=()=>{
+    const txt=document.getElementById("impText").value.trim(),pv=document.getElementById("impPrev"),go=document.getElementById("impGo");
+    if(!txt){pv.textContent="ยังไม่มีข้อมูล";go.disabled=true;return}
+    try{
+      const all=installsFromCSV(txt);
+      const key=i=>i.hospital+"|"+(i.dept||"")+"|"+i.installDate;
+      const have=new Set(state.installs.map(key));
+      parsed=all.filter(i=>!have.has(key(i)));
+      const dup=all.length-parsed.length, machines=parsed.reduce((a,i)=>a+i.items.length,0), pmN=parsed.reduce((a,i)=>a+i.pms.length,0);
+      pv.innerHTML=all.length?`<b>พบ ${all.length} งานติดตั้ง</b> · จะนำเข้า ${parsed.length} งาน (${machines} เครื่อง, ${pmN} รอบ PM)${dup?` · ข้าม ${dup} งานที่มีอยู่แล้ว`:""}`:"ไม่พบงานติดตั้งในข้อมูลนี้";
+      go.disabled=!parsed.length;
+    }catch(e){pv.textContent=e.message;go.disabled=true}
+  };
+  document.getElementById("impText").addEventListener("input",prev);
+  document.getElementById("impFile").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{document.getElementById("impText").value=r.result;prev()};r.readAsText(f,"utf-8")});
+  document.getElementById("impGo").onclick=async()=>{
+    const go=document.getElementById("impGo");go.disabled=true;
+    for(let k=0;k<parsed.length;k++){go.textContent=`กำลังนำเข้า ${k+1}/${parsed.length}…`;await persist(parsed[k])}
+    closeModal();toast(`นำเข้า ${parsed.length} งานติดตั้งแล้ว`);
+  };
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-cal],[data-day],[data-tab],[data-open],[data-done],[data-edit],[data-fill],[data-del],[data-close],[data-filter],[data-new]");if(!t)return;
+  if(t.dataset.cal){const v=t.dataset.cal;if(v==="all")state.calSel=null;else if(v==="0"){const n=new Date();state.calY=n.getFullYear();state.calM=n.getMonth();state.calSel=null}else{const d=new Date(state.calY,state.calM+Number(v),1);state.calY=d.getFullYear();state.calM=d.getMonth();state.calSel=null}render()}
+  else if(t.dataset.day){const d=parse(t.dataset.day);if(d.getMonth()!==state.calM){state.calY=d.getFullYear();state.calM=d.getMonth()}state.calSel=state.calSel===t.dataset.day?null:t.dataset.day;render()}
+  else if(t.dataset.tab){state.tab=t.dataset.tab;render();window.scrollTo(0,0)}
+  else if(t.dataset.done){const [id,i]=t.dataset.done.split("|");openDone(id,Number(i))}
+  else if(t.dataset.open){openDetail(t.dataset.open)}
+  else if(t.dataset.edit){openForm(t.dataset.edit)}
+  else if(t.dataset.fill){fillMissing(t.dataset.fill)}
+  else if(t.dataset.del){confirmDelete(t.dataset.del)}
+  else if(t.hasAttribute("data-close")){closeModal()}
+  else if(t.dataset.filter){state.filter=t.dataset.filter;render()}
+  else if(t.hasAttribute("data-new")){openForm(null)}
+});
+document.addEventListener("change",e=>{if(e.target.id==="showDone"){state.showDone=e.target.checked;render()}});
+document.addEventListener("input",e=>{if(e.target.id==="search"){state.q=e.target.value;const pos=e.target.selectionStart;render();const s=document.getElementById("search");s.focus();try{s.setSelectionRange(pos,pos)}catch(_){}}});
+document.getElementById("addBtn").onclick=()=>openForm(null);
+document.getElementById("exportBtn").onclick=doExport;
+document.getElementById("importBtn").onclick=openImport;
+
+/* ---------- boot ---------- */
+/* back to Task Kosin with a slide-out */
+document.getElementById("backLink").addEventListener("click",e=>{
+  e.preventDefault();const href=e.currentTarget.getAttribute("href");
+  document.body.classList.add("leaving");setTimeout(()=>{location.href=href},180);
+});
+window.addEventListener("pageshow",e=>{if(e.persisted)document.body.classList.remove("leaving")});
+
+async function loadSheet(){
+  if(state.mode==="sheet"&&pending)return;
+  try{
+    const list=await api("pmList");
+    state.installs=(list||[]).map(x=>clone(x));state.mode="sheet";cacheNow();setSync("ok");render();
+  }catch(e){
+    console.warn(e);
+    if(state.mode!=="sheet"){state.mode="error";state.err=(e&&e.message)||"";render()}
+    setSync("error");
+  }
+}
+render();
+(async()=>{
+  if(!conn){
+    state.mode="local";state.installs=loadLocal()||sampleInstalls();saveLocal();setSync("local");render();return;
+  }
+  try{const c=JSON.parse(localStorage.getItem(CACHE_KEY)||"null");if(c){state.installs=c;render()}}catch(e){}
+  await loadSheet();
+  setInterval(()=>{if(document.visibilityState==="visible")loadSheet()},45000);
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")loadSheet()});
+})();
+})();
+</script>
+</body>
+</html>
